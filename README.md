@@ -4,6 +4,8 @@ This is a Modder Tool that allows you to create a dialog that shows when launchi
 
 To use this tool you should add the reference to your project via Nuget Package Manager. It's the quickest and easiest way to add the reference to the project. If you don't want to do it this way, then clone the repo and only copy over the UpdateLog.dll file into your Assemblies folder.
 
+If you still have questions you can drop by the [Discord Channel](https://discord.gg/zXDyfWQ) and ask there.
+
 **Dependencies**  
 This mod does not have any "mod" dependencies in the sense that you would need to add the dependency to your own mod. It does however use Harmony to avoid using any components from RimWorld which means this tool may be added / removed from existing projects with no worry of causing save file issues. If your mod does *not* use Harmony, you should include the harmony.dll in your Assemblies folder as well so the player is guaranteed to have the harmony assembly loaded. 
 
