@@ -75,3 +75,5 @@ When you're ready to update there is an additional field in `UpdateLog.xml` name
 **Testing**  
 If you would merely like to test your update and see what the dialog window would look like with specific formatting you can set the field: `<testing></testing>` to `true` which will prevent the UpdateLog file from being written into and removing the update tag. This means if you have `<update/>` set to true it will remain as such even after your dialog is shown.  
 
+### Creating Custom Tags
+If you would like to create your own tags to use within the update dialog, read [here](https://github.com/SmashPhil/UpdateLog/wiki)
