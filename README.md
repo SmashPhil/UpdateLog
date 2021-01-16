@@ -15,7 +15,7 @@ Once you have the .dll referenced, you can now set up your UpdateLog. The Update
 Create a folder in the appropriate Version folder (ie. 1.2) and name it UpdateLog. Inside this folder you'll want to include an .xml file named `UpdateLog.xml`  
 This file will be where you provide the necessary information to push an update dialog next time you are updating your mod on steam.
 
-**Images**
+**Images**  
 If you plan on showing images or icons inside the UpdateLog dialog window you'll also want to create a folder named `Images` inside the `UpdateLog` folder which will contain all of the textures used inside UpdateLog.  
 
 **UpdateLog.xml**  
