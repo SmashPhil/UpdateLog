@@ -13,11 +13,6 @@ namespace UpdateLog
         public const string hyperlinkTag = "<link>";
         public const string hyperLinkEndTag = "</link>";
 
-        public const string titleTag = "<title>";
-        public const string titleEndTag = "</title>";
-
-        public const string segmentTag = "<s/>";
-
         public const string underlineTag = "<u>";
         public const string underlineEndTag = "</u>";
 
