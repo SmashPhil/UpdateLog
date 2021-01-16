@@ -19,6 +19,15 @@ This file will be where you provide the necessary information to push an update 
 If you plan on showing images or icons inside the UpdateLog dialog window you'll also want to create a folder named `Images` inside the `UpdateLog` folder which will contain all of the textures used inside UpdateLog.  
 
 **UpdateLog.xml**  
+
+Quick Note:  
+Due to the way xml handles the < > & ' and " characters, you cannot directly type them in in your UpdateLog.xml file. For the angle brackets < and > you can use square brackets \[ and \] which will be replaced with the angle brackets when being parsed in. I did this solely for simplicity sake. If there is a conflicting url with square brackets in it please let me know.  Alternatively you can use the special characters which will be swapped when the xml document is built in code. These are...  
+`&lt;` for `<`  
+`&gt;` for `>`  
+`&amp;` for `&`  
+`&apos;` for `'`  
+`&quot;` for `"`  
+
 `<currentVersion></currentVersion>`  
 The current version of the mod. This accepts a string so input whatever you like although the format for versions is *generally* x.x.x for major, minor, and patch versions. For example this project is currently on 1.0.0 due to its first release.
 
