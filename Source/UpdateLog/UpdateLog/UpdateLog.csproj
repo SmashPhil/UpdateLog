@@ -64,16 +64,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DescriptionData.cs" />
-    <Compile Include="Dialog_NewUpdate.cs" />
-    <Compile Include="EnhancedText.cs" />
-    <Compile Include="FileReader.cs" />
-    <Compile Include="Listing_Rich.cs" />
+    <Compile Include="Parsing\DescriptionData.cs" />
+    <Compile Include="UI\Dialog_NewUpdate.cs" />
+    <Compile Include="Parsing\EnhancedText.cs" />
+    <Compile Include="Parsing\FileReader.cs" />
+    <Compile Include="Parsing\SegmentParser.cs" />
+    <Compile Include="TaggedSegments\AnchorSegment.cs" />
+    <Compile Include="TaggedSegments\TitleSegment.cs" />
+    <Compile Include="TaggedSegments\NewSectionSegment.cs" />
+    <Compile Include="TaggedSegments\ImageSegment.cs" />
+    <Compile Include="TaggedSegments\FontSegment.cs" />
+    <Compile Include="UI\Dialog_ShowRegex.cs" />
+    <Compile Include="UI\Listing_Rich.cs" />
+    <Compile Include="TaggedSegments\TaggedSegment.cs" />
     <Compile Include="UpdateFor.cs" />
     <Compile Include="UpdateHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UpdateLog.cs" />
-    <Compile Include="UpdateSaveFileHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -20,9 +20,19 @@ namespace UpdateLog
         static UpdateHandler()
         {
             var harmony = new Harmony("smashphil.updatelog");
+            //Harmony.DEBUG = true;
             harmony.Patch(original: AccessTools.Method(typeof(UIRoot_Entry), nameof(UIRoot_Entry.Init)),
                 postfix: new HarmonyMethod(typeof(UpdateHandler),
                 nameof(UpdateOnStartup)));
+            harmony.Patch(original: AccessTools.Method(typeof(GameComponentUtility), nameof(GameComponentUtility.FinalizeInit)),
+                postfix: new HarmonyMethod(typeof(UpdateHandler),
+                nameof(UpdateOnGameInit)));
+            harmony.Patch(original: AccessTools.Method(typeof(GameComponentUtility), nameof(GameComponentUtility.StartedNewGame)),
+                postfix: new HarmonyMethod(typeof(UpdateHandler),
+                nameof(UpdateOnNewGame)));
+            harmony.Patch(original: AccessTools.Method(typeof(GameComponentUtility), nameof(GameComponentUtility.LoadedGame)),
+                postfix: new HarmonyMethod(typeof(UpdateHandler),
+                nameof(UpdateOnLoadedGame)));
 
             modUpdates = new HashSet<UpdateLog>();
             foreach (ModContentPack mod in LoadedModManager.RunningModsListForReading)
@@ -33,6 +43,9 @@ namespace UpdateLog
                     modUpdates.Add(log);
                 }
             }
+
+            SegmentParser.ParseAndCreateSegments();
+            SegmentParser.GenerateRegexText();
         }
 
         public static void CheckUpdates(UpdateFor updating)
@@ -58,6 +71,21 @@ namespace UpdateLog
         public static void UpdateOnStartup()
         {
             CheckUpdates(UpdateFor.Startup);
+        }
+
+        public static void UpdateOnGameInit()
+        {
+            CheckUpdates(UpdateFor.GameInit);
+        }
+
+        public static void UpdateOnNewGame()
+        {
+            CheckUpdates(UpdateFor.NewGame);
+        }
+
+        public static void UpdateOnLoadedGame()
+        {
+            CheckUpdates(UpdateFor.LoadedGame);
         }
     }
 }

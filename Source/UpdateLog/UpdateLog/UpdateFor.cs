@@ -9,6 +9,8 @@ namespace UpdateLog
     public enum UpdateFor 
     { 
         Startup = 0,
-        GameInit = 1
+        GameInit = 1,
+        LoadedGame = 2,
+        NewGame = 3
     }
 }

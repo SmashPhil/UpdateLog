@@ -25,9 +25,13 @@ namespace UpdateLog
             Mod = mod;
             CurrentFolder = loadFolder;
             UpdateData = FileReader.ParseUpdateData(Path.Combine(FileReader.UpdateLogDirectory(Mod, CurrentFolder), FileReader.UpdateLogFileName));
-            if (UpdateData.iconBar is null)
+            if (UpdateData.rightIconBar is null)
             {
-                UpdateData.iconBar = new List<UpdateLogData.HyperlinkedIcon>();
+                UpdateData.rightIconBar = new List<UpdateLogData.HyperlinkedIcon>();
+            }
+            if (UpdateData.leftIconBar is null)
+            {
+                UpdateData.leftIconBar = new List<UpdateLogData.HyperlinkedIcon>();
             }
             cachedTextures = new Dictionary<string, Texture2D>();
             if (Directory.Exists(FileReader.UpdateImagesDirectory(mod, loadFolder)))
@@ -75,12 +79,23 @@ namespace UpdateLog
                                               new XElement("updateOn", UpdateData.updateOn),
                                               new XElement("description", UpdateData.description),
                                               new XElement("actionOnUpdate", UpdateData.actionOnUpdate)));
-                if (UpdateData.iconBar != null && UpdateData.iconBar.Any())
+                if (UpdateData.rightIconBar != null && UpdateData.rightIconBar.Any())
                 {
-                    doc.Element("UpdateLog").Add(new XElement("iconBar"));
-                    foreach (var item in UpdateData.iconBar)
+                    doc.Element("UpdateLog").Add(new XElement("rightIconBar"));
+                    foreach (var item in UpdateData.rightIconBar)
                     {
-                        doc.Element("UpdateLog").Element("iconBar").Add(new XElement("li",
+                        doc.Element("UpdateLog").Element("rightIconBar").Add(new XElement("li",
+                                                                        new XElement("name", item.name),
+                                                                        new XElement("icon", item.icon),
+                                                                        new XElement("url", item.url)));
+                    }
+                }
+                if (UpdateData.leftIconBar != null && UpdateData.leftIconBar.Any())
+                {
+                    doc.Element("UpdateLog").Add(new XElement("leftIconBar"));
+                    foreach (var item in UpdateData.leftIconBar)
+                    {
+                        doc.Element("UpdateLog").Element("leftIconBar").Add(new XElement("li",
                                                                         new XElement("name", item.name),
                                                                         new XElement("icon", item.icon),
                                                                         new XElement("url", item.url)));
@@ -102,7 +117,8 @@ namespace UpdateLog
 
             public string actionOnUpdate;
 
-            public List<HyperlinkedIcon> iconBar;
+            public List<HyperlinkedIcon> rightIconBar;
+            public List<HyperlinkedIcon> leftIconBar;
 
             public bool testing;
             public bool update;
