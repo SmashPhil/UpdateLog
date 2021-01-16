@@ -28,8 +28,9 @@ namespace UpdateLog
         public static IEnumerable<DescriptionData> ParseDescriptionData(UpdateLog log) => ParseDescriptionData(log.UpdateData.EnhancedDescription);
 
         /// <summary>
-        /// Parse specific string of data. All images will be required to be located in Textures/ if using this method to parse out DescriptionData
+        /// Parse specific string of data. 
         /// </summary>
+        /// <remarks>If using this to parse outside text and draw with DescriptionData tagged segments not within the Dialog_NewUpdate window, the &lt;img/&gt; tag will not work.</remarks>
         /// <param name="description"></param>
         public static IEnumerable<DescriptionData> ParseDescriptionData(string description)
         {

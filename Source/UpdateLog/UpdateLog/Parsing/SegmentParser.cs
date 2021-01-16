@@ -23,7 +23,7 @@ namespace UpdateLog
 
         public static void GenerateRegexText()
         {
-            //@"(<tag>.*?<\/tag>)|(<tag2>.*?<\/tag2>)|(.+?(?=<tag>|<tag2>|$))"
+            //Final Result = "(<tag>.*?<\/tag>)|(<tag2>.*?<\/tag2>)|(.+?(?=<tag>|<tag2>|$))"
             regexTags = string.Empty;
             for (int i = 0; i < tags.Count; i++, regexTags += "|")
             {
