@@ -7,7 +7,7 @@ To use this tool you should add the reference to your project via Nuget Package 
 If you still have questions you can drop by the [Discord Channel](https://discord.gg/zXDyfWQ) and ask there.
 
 ### Dependencies
-This mod does not have any "mod" dependencies in the sense that you would need to add the dependency to your own mod. It does however use Harmony to avoid using any components from RimWorld which means this tool may be added / removed from existing projects with no worry of causing save file issues. If your mod does *not* use Harmony, you should include the harmony.dll in your Assemblies folder as well so the player is guaranteed to have the harmony assembly loaded. 
+This mod does not have any "mod" dependencies in the sense that you would need to add the dependency to your own mod. It does however use Harmony to avoid using any components from RimWorld which means this tool may be added / removed from existing projects with no worry of causing save file issues.
 
 ### Getting Started
 Once you have the .dll referenced, you can now set up your UpdateLog. The UpdateLog uses the *Current Version* of RimWorld like normal projects do. This means if your project has both 1.1 and 1.2 folders, including the UpdateLog in 1.2 will only provide the update log for 1.2. This prevents showing the update dialog for other versions.
