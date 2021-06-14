@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Verse;
 using UnityEngine;
 
-namespace UpdateLog
+namespace UpdateLogTool
 {
     public class Dialog_ShowRegex : Window
     {

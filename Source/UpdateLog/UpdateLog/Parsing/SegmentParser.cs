@@ -4,7 +4,7 @@ using System.Linq;
 using Verse;
 using UnityEngine;
 
-namespace UpdateLog
+namespace UpdateLogTool
 {
     public static class SegmentParser
     {

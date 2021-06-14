@@ -6,7 +6,7 @@ using Verse;
 using RimWorld;
 using UnityEngine;
 
-namespace UpdateLog
+namespace UpdateLogTool
 {
     public class Listing_Rich : Listing_Standard
     {

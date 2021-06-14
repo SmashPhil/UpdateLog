@@ -9,7 +9,7 @@ using RimWorld;
 using Verse;
 using UnityEngine;
 
-namespace UpdateLog
+namespace UpdateLogTool
 {
     public class UpdateLog
     {
@@ -19,6 +19,40 @@ namespace UpdateLog
         public string CurrentFolder { get; private set; }
 
         public Dictionary<string, Texture2D> cachedTextures;
+
+        public UpdateLog (ModContentPack mod, string loadFolder, string path)
+		{
+            Mod = mod;
+            CurrentFolder = loadFolder;
+            UpdateData = FileReader.ParseUpdateData(path);
+            if (UpdateData.rightIconBar is null)
+            {
+                UpdateData.rightIconBar = new List<UpdateLogData.HyperlinkedIcon>();
+            }
+            if (UpdateData.leftIconBar is null)
+            {
+                UpdateData.leftIconBar = new List<UpdateLogData.HyperlinkedIcon>();
+            }
+            cachedTextures = new Dictionary<string, Texture2D>();
+            if (Directory.Exists(FileReader.UpdateImagesDirectory(mod, loadFolder)))
+            {
+                foreach (var file in Directory.GetFiles(FileReader.UpdateImagesDirectory(mod, loadFolder)))
+                {
+                    try
+                    {
+                        byte[] fileData = File.ReadAllBytes(file);
+                        Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
+                        tex.LoadImage(fileData);
+                        tex.name = file.Split('\\').Last();
+                        cachedTextures.Add(tex.name, tex);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error($"Unable to load file {file} into Texture2D. Are you using an unsupported image type? Exception=\"{ex.Message}\"");
+                    }
+                }
+            }
+        }
 
         public UpdateLog(ModContentPack mod, string loadFolder)
         {
@@ -52,16 +86,15 @@ namespace UpdateLog
                     }
                 }
             }
-            
         }
 
         public void NotifyModUpdated()
         {
             if (!UpdateData.testing)
             {
-                SaveUpdateStatus();
+                UpdateData.update = false;
             }
-
+            SaveUpdateStatus();
             UpdateData.InvokeActionOnUpdate();
         }
 
@@ -78,7 +111,9 @@ namespace UpdateLog
                                               new XElement("currentVersion", UpdateData.currentVersion), 
                                               new XElement("updateOn", UpdateData.updateOn),
                                               new XElement("description", UpdateData.description),
-                                              new XElement("actionOnUpdate", UpdateData.actionOnUpdate)));
+                                              new XElement("actionOnUpdate", UpdateData.actionOnUpdate),
+                                              new XElement("update", UpdateData.update),
+                                              new XElement("testing", UpdateData.testing)));
                 if (UpdateData.rightIconBar != null && UpdateData.rightIconBar.Any())
                 {
                     doc.Element("UpdateLog").Add(new XElement("rightIconBar"));

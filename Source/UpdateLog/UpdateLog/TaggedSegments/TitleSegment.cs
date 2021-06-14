@@ -2,7 +2,7 @@
 using Verse;
 using UnityEngine;
 
-namespace UpdateLog
+namespace UpdateLogTool
 {
     public class TitleSegment : TaggedSegment
     {

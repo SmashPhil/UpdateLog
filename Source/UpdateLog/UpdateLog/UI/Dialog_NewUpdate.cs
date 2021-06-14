@@ -7,7 +7,7 @@ using Verse;
 using RimWorld;
 using UnityEngine;
 
-namespace UpdateLog
+namespace UpdateLogTool
 {
     public class Dialog_NewUpdate : Window
     {
@@ -53,6 +53,7 @@ namespace UpdateLog
             closeOnClickedOutside = true;
             absorbInputAroundWindow = true;
         }
+
 
         public override Vector2 InitialSize => new Vector2(DialogWidth, DialogHeight);
 

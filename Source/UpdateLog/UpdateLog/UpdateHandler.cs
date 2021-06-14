@@ -8,7 +8,7 @@ using Verse;
 using UnityEngine;
 using HarmonyLib;
 
-namespace UpdateLog
+namespace UpdateLogTool
 {
     [StaticConstructorOnStartup]
     public static class UpdateHandler
@@ -47,6 +47,8 @@ namespace UpdateLog
             SegmentParser.ParseAndCreateSegments();
             SegmentParser.GenerateRegexText();
         }
+
+        public static UpdateLog UpdateLogData(ModContentPack mod) => modUpdates.FirstOrDefault(m => m.Mod == mod);
 
         public static void CheckUpdates(UpdateFor updating)
         {

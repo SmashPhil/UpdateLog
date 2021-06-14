@@ -1,7 +1,7 @@
 ﻿using System;
 using Verse;
 
-namespace UpdateLog
+namespace UpdateLogTool
 {
     public class FontSegment : TaggedSegment
     {

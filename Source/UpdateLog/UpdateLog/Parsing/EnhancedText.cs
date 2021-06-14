@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using Verse;
 using UnityEngine;
 
-namespace UpdateLog
+namespace UpdateLogTool
 {
     public static class EnhancedText
     {

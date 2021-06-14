@@ -3,7 +3,7 @@ using System.IO;
 using Verse;
 using UnityEngine;
 
-namespace UpdateLog
+namespace UpdateLogTool
 {
     public class ImageSegment : TaggedSegment
     {

@@ -7,7 +7,7 @@ using Verse;
 using RimWorld;
 using HarmonyLib;
 
-namespace UpdateLog
+namespace UpdateLogTool
 {
     public static class FileReader
     {
@@ -40,6 +40,36 @@ namespace UpdateLog
                 Log.Error($"Exception thrown while attempting to read in UpdateLog data for {mod.Name}.\nException=\"{ex.Message}\" StackTrace=\"{ex.StackTrace}\"");
             }
             return null;
+        }
+
+        public static List<UpdateLog> ReadPreviousFiles(this ModContentPack mod)
+		{
+            List<UpdateLog> updates = new List<UpdateLog>();
+            try
+            {
+                var loadFolders = ModFoldersForVersion(mod);
+                if (!loadFolders.NullOrEmpty())
+                {
+                    foreach (string folder in loadFolders)
+                    {
+                        if (Directory.Exists(UpdateLogDirectory(mod, folder)))
+						{
+                            foreach (string filePath in Directory.EnumerateFiles(UpdateLogDirectory(mod, folder), "*.xml"))
+                            {
+								if (File.Exists(filePath))
+								{
+									updates.Add(new UpdateLog(mod, folder, filePath));
+								}
+							}
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Exception thrown while attempting to read in UpdateLog data for {mod.Name}.\nException=\"{ex.Message}\" StackTrace=\"{ex.StackTrace}\"");
+            }
+            return updates;
         }
 
         public static List<string> ModFoldersForVersion(ModContentPack mod)

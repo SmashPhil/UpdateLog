@@ -1,7 +1,7 @@
 ﻿using Verse;
 using UnityEngine;
 
-namespace UpdateLog
+namespace UpdateLogTool
 {
     public abstract class TaggedSegment
     {
