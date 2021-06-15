@@ -7,8 +7,8 @@
     <ProjectGuid>{04DF45B1-9D4D-40A6-A51D-3DCB146A53C8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UpdateLog</RootNamespace>
-    <AssemblyName>UpdateLog</AssemblyName>
+    <RootNamespace>UpdateLogTool</RootNamespace>
+    <AssemblyName>UpdateLogTool</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\Assemblies\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -65,6 +65,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Parsing\DescriptionData.cs" />
+    <Compile Include="TaggedSegments\AnimatedSegment.cs" />
+    <Compile Include="TaggedSegments\GifSegment.cs" />
     <Compile Include="UI\Dialog_NewUpdate.cs" />
     <Compile Include="Parsing\EnhancedText.cs" />
     <Compile Include="Parsing\FileReader.cs" />
@@ -74,7 +76,6 @@
     <Compile Include="TaggedSegments\NewSectionSegment.cs" />
     <Compile Include="TaggedSegments\ImageSegment.cs" />
     <Compile Include="TaggedSegments\FontSegment.cs" />
-    <Compile Include="UI\Dialog_ShowRegex.cs" />
     <Compile Include="UI\Listing_Rich.cs" />
     <Compile Include="TaggedSegments\TaggedSegment.cs" />
     <Compile Include="UpdateFor.cs" />

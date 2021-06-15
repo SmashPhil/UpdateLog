@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace UpdateLogTool
 {
-    public enum UpdateFor 
-    { 
-        Startup = 0,
-        GameInit = 1,
-        LoadedGame = 2,
-        NewGame = 3
-    }
+	public enum UpdateFor 
+	{ 
+		Startup = 0,
+		GameInit = 1,
+		LoadedGame = 2,
+		NewGame = 3
+	}
 }

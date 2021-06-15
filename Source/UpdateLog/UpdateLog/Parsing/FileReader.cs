@@ -9,121 +9,124 @@ using HarmonyLib;
 
 namespace UpdateLogTool
 {
-    public static class FileReader
-    {
-        public const string UpdateLogFolder = "UpdateLog";
-        public const string UpdateLogImageFolder = "Images";
-        public const string UpdateLogFileName = "UpdateLog.xml";
+	public static class FileReader
+	{
+		public const string UpdateLogFolder = "UpdateLog";
+		public const string UpdateLogFileName = "UpdateLog.xml";
+		public const string UpdateLogImageFolder = "Images";
+		public const string UpdateLogGifFolder = "Gifs";
 
-        public static string UpdateLogDirectory(ModContentPack mod, string folderName) => Path.Combine(mod.RootDir, folderName, UpdateLogFolder);
-        public static string UpdateImagesDirectory(ModContentPack mod, string folderName) => Path.Combine(mod.RootDir, folderName, UpdateLogFolder, UpdateLogImageFolder);
-        public static string UpdateImagesDirectory(UpdateLog log) => UpdateImagesDirectory(log.Mod, log.CurrentFolder);
+		public static string UpdateLogDirectory(ModContentPack mod, string folderName) => Path.Combine(mod.RootDir, folderName, UpdateLogFolder);
+		public static string UpdateImagesDirectory(ModContentPack mod, string folderName) => Path.Combine(mod.RootDir, folderName, UpdateLogFolder, UpdateLogImageFolder);
+		public static string UpdateImagesDirectory(UpdateLog log) => UpdateImagesDirectory(log.Mod, log.CurrentFolder);
+		public static string UpdateGifDirectory(ModContentPack mod, string folderName) => Path.Combine(mod.RootDir, folderName, UpdateLogFolder, UpdateLogGifFolder);
+		public static string UpdateGifDirectory(UpdateLog log) => UpdateImagesDirectory(log.Mod, log.CurrentFolder);
 
-        public static UpdateLog ReadFile(this ModContentPack mod)
-        {
-            try
-            {
-                var loadFolders = ModFoldersForVersion(mod);
-                if (!loadFolders.NullOrEmpty())
-                {
-                    foreach (string folder in loadFolders)
-                    {
-                        if (File.Exists(Path.Combine(UpdateLogDirectory(mod, folder), UpdateLogFileName)))
-                        {
-                            return new UpdateLog(mod, folder);
-                        }
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                Log.Error($"Exception thrown while attempting to read in UpdateLog data for {mod.Name}.\nException=\"{ex.Message}\" StackTrace=\"{ex.StackTrace}\"");
-            }
-            return null;
-        }
-
-        public static List<UpdateLog> ReadPreviousFiles(this ModContentPack mod)
+		public static UpdateLog ReadFile(this ModContentPack mod)
 		{
-            List<UpdateLog> updates = new List<UpdateLog>();
-            try
-            {
-                var loadFolders = ModFoldersForVersion(mod);
-                if (!loadFolders.NullOrEmpty())
-                {
-                    foreach (string folder in loadFolders)
-                    {
-                        if (Directory.Exists(UpdateLogDirectory(mod, folder)))
+			try
+			{
+				var loadFolders = ModFoldersForVersion(mod);
+				if (!loadFolders.NullOrEmpty())
+				{
+					foreach (string folder in loadFolders)
+					{
+						if (File.Exists(Path.Combine(UpdateLogDirectory(mod, folder), UpdateLogFileName)))
 						{
-                            foreach (string filePath in Directory.EnumerateFiles(UpdateLogDirectory(mod, folder), "*.xml"))
-                            {
+							return new UpdateLog(mod, folder);
+						}
+					}
+				}
+			}
+			catch(Exception ex)
+			{
+				Log.Error($"Exception thrown while attempting to read in UpdateLog data for {mod.Name}.\nException=\"{ex.Message}\" StackTrace=\"{ex.StackTrace}\"");
+			}
+			return null;
+		}
+
+		public static List<UpdateLog> ReadPreviousFiles(this ModContentPack mod)
+		{
+			List<UpdateLog> updates = new List<UpdateLog>();
+			try
+			{
+				var loadFolders = ModFoldersForVersion(mod);
+				if (!loadFolders.NullOrEmpty())
+				{
+					foreach (string folder in loadFolders)
+					{
+						if (Directory.Exists(UpdateLogDirectory(mod, folder)))
+						{
+							foreach (string filePath in Directory.EnumerateFiles(UpdateLogDirectory(mod, folder), "*.xml"))
+							{
 								if (File.Exists(filePath))
 								{
 									updates.Add(new UpdateLog(mod, folder, filePath));
 								}
 							}
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"Exception thrown while attempting to read in UpdateLog data for {mod.Name}.\nException=\"{ex.Message}\" StackTrace=\"{ex.StackTrace}\"");
-            }
-            return updates;
-        }
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Error($"Exception thrown while attempting to read in UpdateLog data for {mod.Name}.\nException=\"{ex.Message}\" StackTrace=\"{ex.StackTrace}\"");
+			}
+			return updates;
+		}
 
-        public static List<string> ModFoldersForVersion(ModContentPack mod)
-        {
-            ModMetaData metaData = ModLister.GetModWithIdentifier(mod.PackageId);
-            List<LoadFolder> loadFolders = new List<LoadFolder>();
-            if ((metaData?.loadFolders) != null && metaData.loadFolders.DefinedVersions().Count > 0)
-            {
-                loadFolders = metaData.LoadFoldersForVersion(VersionControl.CurrentVersionStringWithoutBuild);
-                if (!loadFolders.NullOrEmpty())
-		        {
-                    return loadFolders.Select(lf => lf.folderName).ToList();
-		        }
-            }
-            
-            loadFolders = new List<LoadFolder>();
+		public static List<string> ModFoldersForVersion(ModContentPack mod)
+		{
+			ModMetaData metaData = ModLister.GetModWithIdentifier(mod.PackageId);
+			List<LoadFolder> loadFolders = new List<LoadFolder>();
+			if ((metaData?.loadFolders) != null && metaData.loadFolders.DefinedVersions().Count > 0)
+			{
+				loadFolders = metaData.LoadFoldersForVersion(VersionControl.CurrentVersionStringWithoutBuild);
+				if (!loadFolders.NullOrEmpty())
+				{
+					return loadFolders.Select(lf => lf.folderName).ToList();
+				}
+			}
+			
+			loadFolders = new List<LoadFolder>();
 
-            int num = VersionControl.CurrentVersion.Major;
-	        int num2 = VersionControl.CurrentVersion.Minor;
-	        do
-	        {
-		        if (num2 == 0)
-		        {
-			        num--;
-			        num2 = 9;
-		        }
-		        else
-		        {
-			        num2--;
-		        }
-		        if (num < 1)
-		        {
-                    loadFolders = metaData.LoadFoldersForVersion("default");
-                    if (loadFolders != null)
-                    {
-                        return loadFolders.Select(lf => lf.folderName).ToList();
-                    }
-                    return DefaultFoldersForVersion(mod).ToList();
-		        }
-		        loadFolders = metaData.LoadFoldersForVersion(num + "." + num2);
-	        }
-            while (loadFolders.NullOrEmpty());
-            return loadFolders.Select(lf => lf.folderName).ToList();
-        }
+			int num = VersionControl.CurrentVersion.Major;
+			int num2 = VersionControl.CurrentVersion.Minor;
+			do
+			{
+				if (num2 == 0)
+				{
+					num--;
+					num2 = 9;
+				}
+				else
+				{
+					num2--;
+				}
+				if (num < 1)
+				{
+					loadFolders = metaData.LoadFoldersForVersion("default");
+					if (loadFolders != null)
+					{
+						return loadFolders.Select(lf => lf.folderName).ToList();
+					}
+					return DefaultFoldersForVersion(mod).ToList();
+				}
+				loadFolders = metaData.LoadFoldersForVersion(num + "." + num2);
+			}
+			while (loadFolders.NullOrEmpty());
+			return loadFolders.Select(lf => lf.folderName).ToList();
+		}
 
-        public static IEnumerable<string> DefaultFoldersForVersion(ModContentPack mod)
-        {
-            ModMetaData metaData = ModLister.GetModWithIdentifier(mod.PackageId);
+		public static IEnumerable<string> DefaultFoldersForVersion(ModContentPack mod)
+		{
+			ModMetaData metaData = ModLister.GetModWithIdentifier(mod.PackageId);
 
-            string rootDir = mod.RootDir;
-            string text = Path.Combine(rootDir, VersionControl.CurrentVersionStringWithoutBuild);
+			string rootDir = mod.RootDir;
+			string text = Path.Combine(rootDir, VersionControl.CurrentVersionStringWithoutBuild);
 			if (Directory.Exists(text))
 			{
-                yield return text;
+				yield return text;
 			}
 			else
 			{
@@ -139,68 +142,68 @@ namespace UpdateLogTool
 				}
 				if (version.Major > 0)
 				{
-                    yield return Path.Combine(rootDir, version.ToString());
+					yield return Path.Combine(rootDir, version.ToString());
 				}
 			}
 			string text2 = Path.Combine(rootDir, ModContentPack.CommonFolderName);
 			if (Directory.Exists(text2))
 			{
-                yield return text2;
+				yield return text2;
 			}
-            yield return rootDir;
-        }
+			yield return rootDir;
+		}
 
-        /// <summary>
-        /// Manually parsing UpdateLog.UpdateLogData due to issue with ObjectFromXml<T> parsing lists in direct DocumentElement object
-        /// </summary>
-        /// <param name="filePath"></param>
-        public static UpdateLog.UpdateLogData ParseUpdateData(string filePath)
+		/// <summary>
+		/// Manually parsing UpdateLog.UpdateLogData due to issue with ObjectFromXml<T> parsing lists in direct DocumentElement object
+		/// </summary>
+		/// <param name="filePath"></param>
+		public static UpdateLog.UpdateLogData ParseUpdateData(string filePath)
 		{
-            string xmlContent = File.ReadAllText(filePath);
-            UpdateLog.UpdateLogData data = new UpdateLog.UpdateLogData();
+			string xmlContent = File.ReadAllText(filePath);
+			UpdateLog.UpdateLogData data = new UpdateLog.UpdateLogData();
 			try
 			{
 				XmlDocument xmlDocument = new XmlDocument();
 				xmlDocument.LoadXml(xmlContent);
-                foreach (XmlNode node in xmlDocument.DocumentElement.ChildNodes)
-                {
-                    switch (node.Name)
-                    {
-                        case "currentVersion":
-                            data.currentVersion = node.InnerText;
-                            break;
-                        case "updateOn":
-                            data.updateOn = (UpdateFor)Enum.Parse(typeof(UpdateFor), node.InnerText);
-                            break;
-                        case "description":
-                            data.description = node.InnerText;
-                            break;
-                        case "rightIconBar":
-                            data.rightIconBar = ListFromXml(node);
-                            break;
-                        case "leftIconBar":
-                            data.leftIconBar = ListFromXml(node);
-                            break;
-                        case "actionOnUpdate":
-                            data.actionOnUpdate = node.InnerText;
-                            break;
-                        case "testing":
-                            {
-                                data.testing = bool.TryParse(node.InnerText, out bool result) && result;
-                            }
-                            break;
-                        case "update":
-                            {
-                                data.update = bool.TryParse(node.InnerText, out bool result) && result;
-                            }
-                            break;
-                        case "#comment":
-                            continue;
-                        default:
-                            Log.Error($"Failed to find {node.Name} in manual parsing.");
-                            break;
-                    }
-                }
+				foreach (XmlNode node in xmlDocument.DocumentElement.ChildNodes)
+				{
+					switch (node.Name)
+					{
+						case "currentVersion":
+							data.currentVersion = node.InnerText;
+							break;
+						case "updateOn":
+							data.updateOn = (UpdateFor)Enum.Parse(typeof(UpdateFor), node.InnerText);
+							break;
+						case "description":
+							data.description = node.InnerText;
+							break;
+						case "rightIconBar":
+							data.rightIconBar = ListFromXml(node);
+							break;
+						case "leftIconBar":
+							data.leftIconBar = ListFromXml(node);
+							break;
+						case "actionOnUpdate":
+							data.actionOnUpdate = node.InnerText;
+							break;
+						case "testing":
+							{
+								data.testing = bool.TryParse(node.InnerText, out bool result) && result;
+							}
+							break;
+						case "update":
+							{
+								data.update = bool.TryParse(node.InnerText, out bool result) && result;
+							}
+							break;
+						case "#comment":
+							continue;
+						default:
+							Log.Error($"Failed to find {node.Name} in manual parsing.");
+							break;
+					}
+				}
 			}
 			catch (Exception ex)
 			{
@@ -209,15 +212,15 @@ namespace UpdateLogTool
 			return data;
 		}
 
-        private static List<UpdateLog.UpdateLogData.HyperlinkedIcon> ListFromXml(XmlNode listRootNode)
-        {
-	        List<UpdateLog.UpdateLogData.HyperlinkedIcon> list = new List<UpdateLog.UpdateLogData.HyperlinkedIcon>();
-	        try
-	        {
-		        foreach (object obj in listRootNode.ChildNodes)
-		        {
-			        XmlNode xmlNode = (XmlNode)obj;
-			        try
+		private static List<UpdateLog.UpdateLogData.HyperlinkedIcon> ListFromXml(XmlNode listRootNode)
+		{
+			List<UpdateLog.UpdateLogData.HyperlinkedIcon> list = new List<UpdateLog.UpdateLogData.HyperlinkedIcon>();
+			try
+			{
+				foreach (object obj in listRootNode.ChildNodes)
+				{
+					XmlNode xmlNode = (XmlNode)obj;
+					try
 					{
 						list.Add(DirectXmlToObject.ObjectFromXml<UpdateLog.UpdateLogData.HyperlinkedIcon>(xmlNode, true));
 					}
@@ -231,19 +234,19 @@ namespace UpdateLogTool
 							listRootNode.OuterXml
 						}), false);
 					}
-		        }
-	        }
-	        catch (Exception ex2)
-	        {
-		        Log.Error(string.Concat(new object[]
-		        {
-			        "Exception loading list from XML: ",
-			        ex2,
-			        "\nXML:\n",
-			        listRootNode.OuterXml
-		        }), false);
-	        }
-	        return list;
-        }
-    }
+				}
+			}
+			catch (Exception ex2)
+			{
+				Log.Error(string.Concat(new object[]
+				{
+					"Exception loading list from XML: ",
+					ex2,
+					"\nXML:\n",
+					listRootNode.OuterXml
+				}), false);
+			}
+			return list;
+		}
+	}
 }
