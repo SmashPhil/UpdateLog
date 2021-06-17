@@ -9,7 +9,10 @@ namespace UpdateLogTool
 	{
 		protected abstract int DefaultFramesPerSecond { get; }
 
-		protected virtual int CurrentFrame(int maxFrames, int fps) => Mathf.FloorToInt(Time.time * fps) % maxFrames;
+		protected virtual int CurrentFrame(int maxFrames, int fps, int delay)
+		{
+			return Mathf.Clamp((Mathf.FloorToInt(Time.time * fps) % (maxFrames + delay)) - delay, 0, maxFrames);
+		}
 
 		public override int HeightOccupied(string innerText)
 		{
@@ -21,15 +24,16 @@ namespace UpdateLogTool
 			}
 			string bracketText = innerTexts[0];
 
-			(_, int height, _) = InnerProperties(bracketText);
+			(_, int height, _, _) = InnerProperties(bracketText);
 			return height;
 		}
 
-		protected virtual (int width, int height, int fps) InnerProperties(string bracketText)
+		protected virtual (int width, int height, int fps, int delay) InnerProperties(string bracketText)
 		{
 			int width = Mathf.FloorToInt(Dialog_NewUpdate.PreviewImageHeight);
 			int height = width;
 			int fps = DefaultFramesPerSecond;
+			int delay = 0;
 			string step = "Splitting bracketText";
 			try
 			{
@@ -52,6 +56,10 @@ namespace UpdateLogTool
 					{
 						int.TryParse(value, out fps);
 					}
+					else if (name.ToUpperInvariant() == "DELAY")
+					{
+						int.TryParse(value, out delay);
+					}
 				}
 			}
 			catch (Exception ex)
@@ -59,7 +67,7 @@ namespace UpdateLogTool
 				Log.ErrorOnce($"Exception thrown grabbing inner properties {bracketText}\nFailed: {step}\nException={ex.Message}", bracketText.GetHashCode());
 			}
 
-			return (width, height, fps);
+			return (width, height, fps, delay);
 		}
 	}
 }

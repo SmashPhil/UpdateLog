@@ -187,6 +187,9 @@ namespace UpdateLogTool
 						case "actionOnUpdate":
 							data.actionOnUpdate = node.InnerText;
 							break;
+						case "images":
+							data.images = ImageListFromXml(node);
+							break;
 						case "testing":
 							{
 								data.testing = bool.TryParse(node.InnerText, out bool result) && result;
@@ -223,6 +226,43 @@ namespace UpdateLogTool
 					try
 					{
 						list.Add(DirectXmlToObject.ObjectFromXml<UpdateLog.UpdateLogData.HyperlinkedIcon>(xmlNode, true));
+					}
+					catch (Exception ex)
+					{
+						Log.Error(string.Concat(new object[]
+						{
+							"Exception loading list element from XML: ",
+							ex,
+							"\nXML:\n",
+							listRootNode.OuterXml
+						}), false);
+					}
+				}
+			}
+			catch (Exception ex2)
+			{
+				Log.Error(string.Concat(new object[]
+				{
+					"Exception loading list from XML: ",
+					ex2,
+					"\nXML:\n",
+					listRootNode.OuterXml
+				}), false);
+			}
+			return list;
+		}
+
+		private static List<UpdateLog.UpdateLogData.UploadedImages> ImageListFromXml(XmlNode listRootNode)
+		{
+			List<UpdateLog.UpdateLogData.UploadedImages> list = new List<UpdateLog.UpdateLogData.UploadedImages>();
+			try
+			{
+				foreach (object obj in listRootNode.ChildNodes)
+				{
+					XmlNode xmlNode = (XmlNode)obj;
+					try
+					{
+						list.Add(DirectXmlToObject.ObjectFromXml<UpdateLog.UpdateLogData.UploadedImages>(xmlNode, true));
 					}
 					catch (Exception ex)
 					{

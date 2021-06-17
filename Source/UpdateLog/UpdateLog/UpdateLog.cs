@@ -2,12 +2,13 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using System.Collections;
 using System.Xml;
 using System.Xml.Linq;
 using RimWorld;
 using Verse;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace UpdateLogTool
 {
@@ -26,14 +27,10 @@ namespace UpdateLogTool
 			Mod = mod;
 			CurrentFolder = loadFolder;
 			UpdateData = FileReader.ParseUpdateData(path);
-			if (UpdateData.rightIconBar is null)
-			{
-				UpdateData.rightIconBar = new List<UpdateLogData.HyperlinkedIcon>();
-			}
-			if (UpdateData.leftIconBar is null)
-			{
-				UpdateData.leftIconBar = new List<UpdateLogData.HyperlinkedIcon>();
-			}
+			UpdateData.rightIconBar ??= new List<UpdateLogData.HyperlinkedIcon>();
+			UpdateData.leftIconBar ??= new List<UpdateLogData.HyperlinkedIcon>();
+			UpdateData.images ??= new List<UpdateLogData.UploadedImages>();
+
 			cachedTextures = new Dictionary<string, Texture2D>();
 			if (Directory.Exists(FileReader.UpdateImagesDirectory(mod, loadFolder)))
 			{
@@ -165,7 +162,7 @@ namespace UpdateLogTool
 											  new XElement("actionOnUpdate", UpdateData.actionOnUpdate),
 											  new XElement("update", UpdateData.update),
 											  new XElement("testing", UpdateData.testing)));
-				if (UpdateData.rightIconBar != null && UpdateData.rightIconBar.Any())
+				if (!UpdateData.rightIconBar.NullOrEmpty())
 				{
 					doc.Element("UpdateLog").Add(new XElement("rightIconBar"));
 					foreach (var item in UpdateData.rightIconBar)
@@ -176,7 +173,7 @@ namespace UpdateLogTool
 																		new XElement("url", item.url)));
 					}
 				}
-				if (UpdateData.leftIconBar != null && UpdateData.leftIconBar.Any())
+				if (!UpdateData.leftIconBar.NullOrEmpty())
 				{
 					doc.Element("UpdateLog").Add(new XElement("leftIconBar"));
 					foreach (var item in UpdateData.leftIconBar)
@@ -185,6 +182,21 @@ namespace UpdateLogTool
 																		new XElement("name", item.name),
 																		new XElement("icon", item.icon),
 																		new XElement("url", item.url)));
+					}
+				}
+				if (!UpdateData.images.NullOrEmpty())
+				{
+					doc.Element("UpdateLog").Add(new XElement("images"));
+					foreach (var item in UpdateData.images)
+					{
+						doc.Element("UpdateLog").Element("images").Add(new XElement("li", 
+																	new XElement("name", item.name), 
+																	new XElement("urls")));
+						foreach (var url in item.urls)
+						{
+							doc.Element("UpdateLog").Element("images").Element("li").Element("urls").Add(new XElement("li",
+																										new XElement(url)));
+						}
 					}
 				}
 				doc.Save(Path.Combine(FileReader.UpdateLogDirectory(Mod, CurrentFolder), FileReader.UpdateLogFileName));
@@ -205,6 +217,8 @@ namespace UpdateLogTool
 
 			public List<HyperlinkedIcon> rightIconBar;
 			public List<HyperlinkedIcon> leftIconBar;
+
+			public List<UploadedImages> images;
 
 			public bool testing;
 			public bool update;
@@ -252,6 +266,15 @@ namespace UpdateLogTool
 				/// URL to webpage that will be linked upon clicking the icon
 				/// </summary>
 				public string url;
+			}
+
+			public struct UploadedImages
+			{
+				public string name;
+				/// <summary>
+				/// url to directory containing image
+				/// </summary>
+				public List<string> urls;
 			}
 		}
 	}

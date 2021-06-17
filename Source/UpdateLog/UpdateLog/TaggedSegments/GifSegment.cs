@@ -23,12 +23,12 @@ namespace UpdateLogTool
 			string bracketText = innerTexts[0];
 			string innerInnerText = innerTexts[1];
 
-			int width; int height; int fps;
-			(width, height, fps) = InnerProperties(bracketText);
+			int width; int height; int fps; int delay;
+			(width, height, fps, delay) = InnerProperties(bracketText);
 
 			if (lister.CurrentLog is UpdateLog log && log.cachedGifs.TryGetValue(innerInnerText, out List<Texture2D> textures))
 			{
-				lister.DrawTexture(textures[CurrentFrame(textures.Count, fps)], height);
+				lister.DrawTexture(textures[CurrentFrame(textures.Count, fps, delay)], height);
 			}
 			else
 			{
