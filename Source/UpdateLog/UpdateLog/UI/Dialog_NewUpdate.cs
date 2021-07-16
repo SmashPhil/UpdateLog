@@ -34,6 +34,7 @@ namespace UpdateLogTool
 		private Listing_Rich lister = new Listing_Rich();
 		private List<DescriptionData> segments = new List<DescriptionData>();
 
+		private DescriptionData versionSegment;
 		private readonly List<Tuple<string, string, Texture2D>> cachedLeftIconBar = new List<Tuple<string, string, Texture2D>>();
 		private readonly List<Tuple<string, string, Texture2D>> cachedRightIconBar = new List<Tuple<string, string, Texture2D>>();
 
@@ -71,6 +72,7 @@ namespace UpdateLogTool
 				mod = log.Mod;
 				metaData = ModLister.GetModWithIdentifier(mod.PackageId);
 				segments = EnhancedText.ParseDescriptionData(log).ToList();
+				versionSegment = new DescriptionData($"<b>Version {CurrentLog.UpdateData.currentVersion}</b>");
 				RecacheHyperlinks();
 				cachedHeightDirty = true;
 				lister.CurrentLog = CurrentLog;
@@ -131,7 +133,7 @@ namespace UpdateLogTool
 			GUI.color = color;
 			Text.Anchor = anchor;
 			Text.Font = font;
-			cachedViewHeight = height - 10;
+			cachedViewHeight = height;
 		}
 
 		public override void DoWindowContents(Rect inRect)
@@ -224,7 +226,11 @@ namespace UpdateLogTool
 
 			Rect viewRect = new Rect(inRect.x, inRect.y, inRect.width - 16, cachedViewHeight);
 
-			lister.BeginScrollView(lowerRect, ref scrollPosition, ref viewRect);
+			Widgets.BeginScrollView(lowerRect, ref scrollPosition, viewRect);
+			lister.Begin(viewRect);
+			Text.Anchor = TextAnchor.MiddleCenter;
+			lister.RichText(versionSegment);
+			Text.Anchor = TextAnchor.MiddleLeft;
 			foreach (DescriptionData segment in segments)
 			{
 				if (segment.tag is TaggedSegment tag)
@@ -236,7 +242,8 @@ namespace UpdateLogTool
 					lister.RichText(segment);
 				}
 			}
-			lister.EndScrollView(ref viewRect);
+			lister.End();
+			Widgets.EndScrollView();
 
 			Rect bottomButtonsRect = new Rect(0, inRect.height - PaginationButtonHeight * 2, PaginationButtonHeight * 2, PaginationButtonHeight);
 			if (selectedLogIndex > 0 && Widgets.ButtonText(bottomButtonsRect, "<"))

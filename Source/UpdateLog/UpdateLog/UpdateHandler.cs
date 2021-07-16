@@ -55,13 +55,17 @@ namespace UpdateLogTool
 			updateList.Clear();
 			foreach (UpdateLog log in modUpdates)
 			{
-				if (log.UpdateData.updateOn == updating && log.UpdateData.update)
+				if (log.UpdateData.updateOn == updating)
 				{
-					log.NotifyModUpdated();
-					if (!log.UpdateData.description.NullOrEmpty())
+					if (log.UpdateData.update)
 					{
-						updateList.Add(log);
+						log.NotifyModUpdated();
+						if (!log.UpdateData.description.NullOrEmpty())
+						{
+							updateList.Add(log);
+						}
 					}
+					log.SaveUpdateStatus();
 				}
 			}
 			if (updateList.Any())

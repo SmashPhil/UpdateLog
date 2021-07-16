@@ -210,7 +210,7 @@ namespace UpdateLogTool
 			}
 			catch (Exception ex)
 			{
-				Log.Error("Exception loading file at " + filePath + ". Loading defaults instead. Exception was: " + ex.ToString(), false);
+				Log.Error($"Exception loading file at {filePath}. Loading defaults instead. Exception={ex.Message}");
 			}
 			return data;
 		}
@@ -229,25 +229,13 @@ namespace UpdateLogTool
 					}
 					catch (Exception ex)
 					{
-						Log.Error(string.Concat(new object[]
-						{
-							"Exception loading list element from XML: ",
-							ex,
-							"\nXML:\n",
-							listRootNode.OuterXml
-						}), false);
+						Log.Error($"Exception loading list element from XML. Ex={ex.Message} Xml={listRootNode.OuterXml}");
 					}
 				}
 			}
 			catch (Exception ex2)
 			{
-				Log.Error(string.Concat(new object[]
-				{
-					"Exception loading list from XML: ",
-					ex2,
-					"\nXML:\n",
-					listRootNode.OuterXml
-				}), false);
+				Log.Error($"Exception loading list element from XML. Ex={ex2.Message} Xml={listRootNode.OuterXml}");
 			}
 			return list;
 		}
@@ -266,25 +254,13 @@ namespace UpdateLogTool
 					}
 					catch (Exception ex)
 					{
-						Log.Error(string.Concat(new object[]
-						{
-							"Exception loading list element from XML: ",
-							ex,
-							"\nXML:\n",
-							listRootNode.OuterXml
-						}), false);
+						Log.Error($"Exception loading list element from XML. Ex={ex.Message} Xml={listRootNode.OuterXml}");
 					}
 				}
 			}
 			catch (Exception ex2)
 			{
-				Log.Error(string.Concat(new object[]
-				{
-					"Exception loading list from XML: ",
-					ex2,
-					"\nXML:\n",
-					listRootNode.OuterXml
-				}), false);
+				Log.Error($"Exception loading list element from XML. Ex={ex2.Message} Xml={listRootNode.OuterXml}");
 			}
 			return list;
 		}

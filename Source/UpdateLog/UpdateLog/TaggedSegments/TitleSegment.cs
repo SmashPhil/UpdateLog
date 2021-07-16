@@ -11,7 +11,7 @@ namespace UpdateLogTool
 		public override int HeightOccupied(string innerText)
 		{
 			Text.Font = GameFont.Small;
-			return (int)Text.CalcHeight(innerText, Dialog_NewUpdate.DialogWidth);
+			return (int)Text.CalcHeight(innerText, Dialog_NewUpdate.DialogWidth) + 5;
 		}
 
 		public override void SegmentAction(Listing_Rich lister, string innerText)

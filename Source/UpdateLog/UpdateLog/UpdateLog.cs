@@ -27,6 +27,7 @@ namespace UpdateLogTool
 			Mod = mod;
 			CurrentFolder = loadFolder;
 			UpdateData = FileReader.ParseUpdateData(path);
+			UpdateData.currentVersion = UpdateLogVersionFile(UpdateData.currentVersion);
 			UpdateData.rightIconBar ??= new List<UpdateLogData.HyperlinkedIcon>();
 			UpdateData.leftIconBar ??= new List<UpdateLogData.HyperlinkedIcon>();
 			UpdateData.images ??= new List<UpdateLogData.UploadedImages>();
@@ -82,6 +83,7 @@ namespace UpdateLogTool
 			Mod = mod;
 			CurrentFolder = loadFolder;
 			UpdateData = FileReader.ParseUpdateData(Path.Combine(FileReader.UpdateLogDirectory(Mod, CurrentFolder), FileReader.UpdateLogFileName));
+			UpdateData.currentVersion = UpdateLogVersionFile(UpdateData.currentVersion);
 			if (UpdateData.rightIconBar is null)
 			{
 				UpdateData.rightIconBar = new List<UpdateLogData.HyperlinkedIcon>();
@@ -136,13 +138,22 @@ namespace UpdateLogTool
 			}
 		}
 
+		public string UpdateLogVersionFile(string xmlVersion)
+		{
+			if (File.Exists(Path.Combine(Mod.RootDir, "Version.txt")))
+			{
+				string assemblyVersion = File.ReadAllText(Path.Combine(Mod.RootDir, "Version.txt"));
+				return assemblyVersion;
+			}
+			return xmlVersion;
+		}
+
 		public void NotifyModUpdated()
 		{
 			if (!UpdateData.testing)
 			{
 				UpdateData.update = false;
 			}
-			SaveUpdateStatus();
 			UpdateData.InvokeActionOnUpdate();
 		}
 
