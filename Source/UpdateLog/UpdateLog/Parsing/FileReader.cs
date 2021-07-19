@@ -12,11 +12,13 @@ namespace UpdateLogTool
 	public static class FileReader
 	{
 		public const string UpdateLogFolder = "UpdateLog";
+		public const string UpdateLogOldFolder = "Previous";
 		public const string UpdateLogFileName = "UpdateLog.xml";
 		public const string UpdateLogImageFolder = "Images";
 		public const string UpdateLogGifFolder = "Gifs";
 
 		public static string UpdateLogDirectory(ModContentPack mod, string folderName) => Path.Combine(mod.RootDir, folderName, UpdateLogFolder);
+		public static string UpdateLogOldDirectory(ModContentPack mod, string folderName) => Path.Combine(mod.RootDir, folderName, UpdateLogFolder, UpdateLogOldFolder);
 		public static string UpdateImagesDirectory(ModContentPack mod, string folderName) => Path.Combine(mod.RootDir, folderName, UpdateLogFolder, UpdateLogImageFolder);
 		public static string UpdateImagesDirectory(UpdateLog log) => UpdateImagesDirectory(log.Mod, log.CurrentFolder);
 		public static string UpdateGifDirectory(ModContentPack mod, string folderName) => Path.Combine(mod.RootDir, folderName, UpdateLogFolder, UpdateLogGifFolder);
@@ -57,11 +59,18 @@ namespace UpdateLogTool
 					{
 						if (Directory.Exists(UpdateLogDirectory(mod, folder)))
 						{
-							foreach (string filePath in Directory.EnumerateFiles(UpdateLogDirectory(mod, folder), "*.xml"))
+							if (File.Exists(Path.Combine(UpdateLogDirectory(mod, folder), UpdateLogFileName)))
 							{
-								if (File.Exists(filePath))
+								updates.Add(new UpdateLog(mod, folder));
+							}
+							if (Directory.Exists(UpdateLogOldDirectory(mod, folder)))
+							{
+								foreach (string filePath in Directory.EnumerateFiles(UpdateLogOldDirectory(mod, folder), "*.xml"))
 								{
-									updates.Add(new UpdateLog(mod, folder, filePath));
+									if (File.Exists(filePath))
+									{
+										updates.Add(new UpdateLog(mod, folder, filePath, false));
+									}
 								}
 							}
 						}

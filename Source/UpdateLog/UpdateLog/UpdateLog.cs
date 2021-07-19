@@ -22,12 +22,15 @@ namespace UpdateLogTool
 		public Dictionary<string, Texture2D> cachedTextures;
 		public Dictionary<string, List<Texture2D>> cachedGifs = new Dictionary<string, List<Texture2D>>();
 
-		public UpdateLog (ModContentPack mod, string loadFolder, string path)
+		public UpdateLog (ModContentPack mod, string loadFolder, string path, bool updateVersion = true)
 		{
 			Mod = mod;
 			CurrentFolder = loadFolder;
 			UpdateData = FileReader.ParseUpdateData(path);
-			UpdateData.currentVersion = UpdateLogVersionFile(UpdateData.currentVersion);
+			if (updateVersion)
+			{
+				UpdateData.currentVersion = UpdateLogVersionFile(UpdateData.currentVersion);
+			}
 			UpdateData.rightIconBar ??= new List<UpdateLogData.HyperlinkedIcon>();
 			UpdateData.leftIconBar ??= new List<UpdateLogData.HyperlinkedIcon>();
 			UpdateData.images ??= new List<UpdateLogData.UploadedImages>();
@@ -78,12 +81,15 @@ namespace UpdateLogTool
 			}
 		}
 
-		public UpdateLog(ModContentPack mod, string loadFolder)
+		public UpdateLog(ModContentPack mod, string loadFolder, bool updateVersion = true)
 		{
 			Mod = mod;
 			CurrentFolder = loadFolder;
 			UpdateData = FileReader.ParseUpdateData(Path.Combine(FileReader.UpdateLogDirectory(Mod, CurrentFolder), FileReader.UpdateLogFileName));
-			UpdateData.currentVersion = UpdateLogVersionFile(UpdateData.currentVersion);
+			if (updateVersion)
+			{
+				UpdateData.currentVersion = UpdateLogVersionFile(UpdateData.currentVersion);
+			}
 			if (UpdateData.rightIconBar is null)
 			{
 				UpdateData.rightIconBar = new List<UpdateLogData.HyperlinkedIcon>();
