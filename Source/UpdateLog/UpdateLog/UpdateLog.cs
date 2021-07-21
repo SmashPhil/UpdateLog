@@ -172,15 +172,22 @@ namespace UpdateLogTool
 			}
 			try
 			{
-				XDocument doc = new XDocument(new XElement("UpdateLog", 
+				XDocument doc = new XDocument(new XElement("UpdateLog",
+											  new XComment("Can utilize Version.txt file placed in mod's root directory"),
 											  new XElement("currentVersion", UpdateData.currentVersion), 
+											  new XComment(string.Join(",", Enum.GetNames(typeof(UpdateFor)))),
 											  new XElement("updateOn", UpdateData.updateOn),
+											  new XComment("Full description shown in update page"),
 											  new XElement("description", UpdateData.description),
+											  new XComment("Static parameterless method to execute when update log is executed"),
 											  new XElement("actionOnUpdate", UpdateData.actionOnUpdate),
+											  new XComment("Show update log on next startup."),
 											  new XElement("update", UpdateData.update),
+											  new XComment("Testing mode prevents the update from saving over the UpdateLog file"),
 											  new XElement("testing", UpdateData.testing)));
 				if (!UpdateData.rightIconBar.NullOrEmpty())
 				{
+					doc.Element("UpdateLog").Add(new XComment("Icon bar shown to the right of the mod's name"));
 					doc.Element("UpdateLog").Add(new XElement("rightIconBar"));
 					foreach (var item in UpdateData.rightIconBar)
 					{
@@ -192,6 +199,7 @@ namespace UpdateLogTool
 				}
 				if (!UpdateData.leftIconBar.NullOrEmpty())
 				{
+					doc.Element("UpdateLog").Add(new XComment("Icon bar shown to the left of the mod's name"));
 					doc.Element("UpdateLog").Add(new XElement("leftIconBar"));
 					foreach (var item in UpdateData.leftIconBar)
 					{
@@ -203,6 +211,7 @@ namespace UpdateLogTool
 				}
 				if (!UpdateData.images.NullOrEmpty())
 				{
+					doc.Element("UpdateLog").Add(new XComment("WIP - Do not use right now"));
 					doc.Element("UpdateLog").Add(new XElement("images"));
 					foreach (var item in UpdateData.images)
 					{
