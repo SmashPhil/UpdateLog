@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Linq;
 using System.Collections;
 using System.Xml;
@@ -259,11 +260,11 @@ namespace UpdateLogTool
 				{
 					string[] methodFullName = actionOnUpdate.Split('.');
 					Type classType = GenTypes.GetTypeInAnyAssembly(methodFullName[0] + "." + methodFullName[1], methodFullName[0]);
-					classType.GetMethod(methodFullName[2]).Invoke(null, null);
+					classType.GetMethod(methodFullName[2], BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
 				}
-				catch (MissingMethodException)
+				catch (Exception ex)
 				{
-					Log.Warning($"Unable to assign method on update. Method could not be found: {actionOnUpdate}");
+					Log.Error($"Unable to invoke method on update. Method could not be found: {actionOnUpdate ?? "Null"} Ex={ex.Message}");
 				}
 			}
 
