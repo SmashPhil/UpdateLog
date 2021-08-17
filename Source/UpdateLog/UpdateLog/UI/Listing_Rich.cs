@@ -169,6 +169,7 @@ namespace UpdateLogTool
 						}
 					}
 					Rect linkRect = new Rect(startX, startY - fontHeight, segmentSize.x, fontHeight);
+					TooltipHandler.TipRegion(linkRect, url);
 					if (Mouse.IsOver(linkRect))
 					{
 						mouseovers[i] = true;
