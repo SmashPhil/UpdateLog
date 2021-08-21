@@ -157,15 +157,13 @@ namespace UpdateLogTool
 
 		public void NotifyModUpdated()
 		{
-			if (!UpdateData.testing)
-			{
-				UpdateData.update = false;
-			}
 			UpdateData.InvokeActionOnUpdate();
+			UpdateData.update = false;
 		}
 
 		public void SaveUpdateStatus()
 		{
+			if (UpdateData.testing) return;
 			if (!Directory.Exists(FileReader.UpdateLogDirectory(Mod, CurrentFolder)))
 			{
 				Log.Error($"[{Mod.Name}] Unable to save UpdateLog info as directory {FileReader.UpdateLogDirectory(Mod, CurrentFolder)} does not exist.");

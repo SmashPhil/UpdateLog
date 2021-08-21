@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>UpdateLog</id>
-    <version>1.0.0</version>
+    <version>1.3.0000</version>
     <title>RimWorld Update Log</title>
     <authors>Smash Phil</authors>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -11,8 +11,11 @@
     <description>UpdateNews modder tool for generating RichText descriptions to be displayed upon updating a Mod.</description>
     <releaseNotes>Added custom bracket creation.</releaseNotes>
     <copyright>Copyright 2021</copyright>
+    <dependencies>
+      <group targetFramework=".NetFramework4.7.2" />
+    </dependencies>
   </metadata>
   <files>
-	<file src="updatelog.png" target="" />
+	  <file src="updatelog.png" target="" />
   </files>
 </package>
