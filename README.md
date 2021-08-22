@@ -13,7 +13,7 @@ This mod does not have any "mod" dependencies in the sense that you would need t
 Once you have the .dll referenced, you can now set up your UpdateLog. The UpdateLog uses the *Current Version* of RimWorld like normal projects do. This means if your project has both 1.1 and 1.2 folders, including the UpdateLog in 1.2 will only provide the update log for 1.2. This prevents showing the update dialog for other versions.
 
 Create a folder in the appropriate Version folder (ie. 1.2) and name it UpdateLog. Inside this folder you'll want to include an .xml file named `UpdateLog.xml`  
-This file will be where you provide the necessary information to push an update dialog next time you are updating your mod on steam.
+This file will be where you provide the necessary information to push an update dialog next time you are updating your mod on steam. Alternatively you can leave the folder empty and the `UpdateLog.xml` file will be generated for you when you run the game. After running the game once, your file will be written into with all fields that you can utilize as well as some comments to give you some basic understanding of what each field does.
 
 **Images**  
 If you plan on showing images or icons inside the UpdateLog dialog window you'll also want to create a folder named `Images` inside the `UpdateLog` folder which will contain all of the textures used inside UpdateLog.  
