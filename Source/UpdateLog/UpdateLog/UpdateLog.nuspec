@@ -2,11 +2,12 @@
 <package >
   <metadata>
     <id>UpdateLog</id>
-    <version>1.3.0000</version>
+    <version>1.3.1000</version>
     <title>RimWorld Update Log</title>
     <authors>Smash Phil</authors>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <license type="expression">MIT</license>
+    <icon>updatelog.png</icon>
     <projectUrl>https://github.com/SmashPhil/UpdateLog</projectUrl>
     <description>UpdateNews modder tool for generating RichText descriptions to be displayed upon updating a Mod.</description>
     <releaseNotes>Added custom bracket creation.</releaseNotes>
