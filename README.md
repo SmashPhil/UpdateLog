@@ -75,6 +75,12 @@ When you're ready to update there is an additional field in `UpdateLog.xml` name
 **Testing**  
 If you would merely like to test your update and see what the dialog window would look like with specific formatting you can set the field: `<testing></testing>` to `true` which will prevent the UpdateLog file from being written into and removing the update tag. This means if you have `<update/>` set to true it will remain as such even after your dialog is shown.  
 
+**Version.txt**  
+If you would like your current version to automatically update alongside your project, you can include a Version.txt file in the root directory of your mod and it will pull whatever version is in that file rather than using the version in the UpdateLog file. When it writes over the file on restart it will update the current version.  
+
+*Sounds like extra work to me...*  
+Not if you pair this with some build setting or line in a static constructor that writes to this file with your current AssemblyVersion. I use this exact method in Vehicles to keep the UpdateLog and my project's assembly version in sync. It's fast, easy, and most of all requires less work to push out an update.
+
 ## Tags
 For a full comprehensive list of tags you can use within the description, read [here](https://github.com/SmashPhil/UpdateLog/wiki)
 
