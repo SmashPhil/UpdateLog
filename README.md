@@ -52,15 +52,15 @@ If you leave this field blank, it will bypass this part.
 
 `<rightIconBar></rightIconBar>` and `<leftIconBar></leftIconBar>`  
 These 2 fields will create clickable icons that will open a webpage from the url provided.  
-Use the left or right IconBar field to add these links. They will show up starting from the outside working their way in.  
+Use the left or right IconBar field to add these links. They will show up starting from the outside working their way in.
 
 These 2 fields are lists containing 3 additional fields... the `name`, `icon`, and `url` so it will look like:  
 ```xml
 <rightIconBar>
     <li>
-      <name>Github</name>
-      <icon>githubIcon.png</icon>
-      <url>https://github.com/SmashPhil/UpdateLog</url>
+      <name>Github</name> <!-- Name that will appear when Mouse is hovering over the icon -->
+      <icon>githubIcon</icon> <!-- Name of the image file so that the cached texture can be retrieved. The image will need to be in the Images folder -->
+      <url>https://github.com/SmashPhil/UpdateLog</url> <!-- url link navigated to when the icon is clicked -->
     </li>
 </rightIconBar>`
 ```
@@ -74,6 +74,12 @@ When you're ready to update there is an additional field in `UpdateLog.xml` name
 
 **Testing**  
 If you would merely like to test your update and see what the dialog window would look like with specific formatting you can set the field: `<testing></testing>` to `true` which will prevent the UpdateLog file from being written into and removing the update tag. This means if you have `<update/>` set to true it will remain as such even after your dialog is shown.  
+
+**Version.txt**  
+If you would like your current version to automatically update alongside your project, you can include a Version.txt file in the root directory of your mod and it will pull whatever version is in that file rather than using the version in the UpdateLog file. When it writes over the file on restart it will update the current version.  
+
+*Sounds like extra work to me...*  
+Not if you pair this with some build setting or line in a static constructor that writes to this file with your current AssemblyVersion. I use this exact method in Vehicles to keep the UpdateLog and my project's assembly version in sync. It's fast, easy, and most of all requires less work to push out an update.
 
 ## Tags
 For a full comprehensive list of tags you can use within the description, read [here](https://github.com/SmashPhil/UpdateLog/wiki)
