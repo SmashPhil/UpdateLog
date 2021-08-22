@@ -52,15 +52,15 @@ If you leave this field blank, it will bypass this part.
 
 `<rightIconBar></rightIconBar>` and `<leftIconBar></leftIconBar>`  
 These 2 fields will create clickable icons that will open a webpage from the url provided.  
-Use the left or right IconBar field to add these links. They will show up starting from the outside working their way in.  
+Use the left or right IconBar field to add these links. They will show up starting from the outside working their way in.
 
 These 2 fields are lists containing 3 additional fields... the `name`, `icon`, and `url` so it will look like:  
 ```xml
 <rightIconBar>
     <li>
-      <name>Github</name>
-      <icon>githubIcon.png</icon>
-      <url>https://github.com/SmashPhil/UpdateLog</url>
+      <name>Github</name> <!-- Name that will appear when Mouse is hovering over the icon -->
+      <icon>githubIcon</icon> <!-- Name of the image file so that the cached texture can be retrieved. The image will need to be in the Images folder -->
+      <url>https://github.com/SmashPhil/UpdateLog</url> <!-- url link navigated to when the icon is clicked -->
     </li>
 </rightIconBar>`
 ```
