@@ -7,9 +7,9 @@ namespace UpdateLogTool
 	{
 		public override (string, string) Tags => ("<font>", "</font>");
 
-		public override int HeightOccupied(string innerText)
+		public override int HeightOccupied(UpdateLog log, string fullText)
 		{
-			Text.Font = (GameFont)Enum.Parse(typeof(GameFont), innerText, true);
+			Text.Font = (GameFont)Enum.Parse(typeof(GameFont), fullText, true);
 			return 0;
 		}
 

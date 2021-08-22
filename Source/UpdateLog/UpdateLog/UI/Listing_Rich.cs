@@ -23,16 +23,15 @@ namespace UpdateLogTool
 		{
 		}
 
-		public void DrawTexture(Texture2D texture, float height)
+		public void DrawTexture(Texture2D texture, float width, float height)
 		{
-			float imageWidth = ((float)texture.width / texture.height) * height;
 			NewColumnIfNeeded(height);
 			Rect rect = GetRect(height);
 			Rect imageRect = new Rect(rect)
 			{
-				x = (rect.width - imageWidth) / 2,
+				x = (rect.width - width) / 2,
 				height = height,
-				width = imageWidth
+				width = width
 			};
 			GUI.DrawTexture(imageRect, texture);
 		}
@@ -51,15 +50,23 @@ namespace UpdateLogTool
 				bool[] mouseovers = DrawHyperlinks(segment, text);
 				for (int i = 0; i < segment.hyperlinks.Length; i++)
 				{
-					string hyperlinkText = segment.hyperlinks[i];
-					string nameText = Regex.Match(hyperlinkText, @"(\(.*?\))", RegexOptions.Singleline, TimeSpan.FromMilliseconds(2)).Value;
+					string unparsedHyperlink = segment.hyperlinks[i];
+					string url = Regex.Match(unparsedHyperlink, @"((?<=<link>).*?(?=<\/link>))").Value;
+					string nameText = Regex.Match(unparsedHyperlink, @"(\(.*?\))", RegexOptions.Singleline, TimeSpan.FromMilliseconds(2)).Value.Trim('(').Trim(')');
 					string colorCode = "#99D9EA";
 					if (mouseovers[i])
 					{
 						colorCode = "#4DB3E6";
 					}
-					nameText = nameText.Replace("(", $"<color={colorCode}>").Replace(")", "</color>");
-					text = text.Replace(hyperlinkText, nameText);
+					if (nameText.NullOrEmpty() || string.IsNullOrWhiteSpace(nameText))
+					{
+						nameText = $"<color={colorCode}>{url}</color>";
+					}
+					else
+					{
+						nameText = $"<color={colorCode}>{nameText}</color>";
+					}
+					text = text.Replace(unparsedHyperlink, nameText);
 				}
 			}
 			Label(text);
@@ -122,6 +129,10 @@ namespace UpdateLogTool
 			{
 				string url = Regex.Match(hyperlinkUnparsed, @"((?<=<link>).*?(?=<\/link>))").Value;
 				string name = Regex.Match(hyperlinkUnparsed, @"((?<=\().*?(?=\)))").Value;
+				if (name.NullOrEmpty() || string.IsNullOrWhiteSpace(name))
+				{
+					name = url;
+				}
 				for (int h = 0; h < i; h++)
 				{
 					string prevHyperLink = segment.hyperlinks[h];

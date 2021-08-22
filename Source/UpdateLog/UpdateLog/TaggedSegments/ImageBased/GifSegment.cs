@@ -14,21 +14,12 @@ namespace UpdateLogTool
 
 		public override void SegmentAction(Listing_Rich lister, string innerText)
 		{
-			string[] innerTexts = innerText.Split('>');
-			if (innerTexts.Length != 2)
-			{
-				Log.ErrorOnce($"Incorrect split for inner bracket text of gif {innerText}.", innerText.GetHashCode());
-				return;
-			}
-			string bracketText = innerTexts[0];
-			string innerInnerText = innerTexts[1];
-
-			int width; int height; int fps; int delay;
-			(width, height, fps, delay) = InnerProperties(bracketText);
-
+			string innerInnerText = GetInnerText(innerText);
 			if (lister.CurrentLog is UpdateLog log && log.cachedGifs.TryGetValue(innerInnerText, out List<Texture2D> textures))
 			{
-				lister.DrawTexture(textures[CurrentFrame(textures.Count, fps, delay)], height);
+				(int width, _, Dictionary<string, object> lookup) = ContainerAttributes(innerText);
+				int height = HeightOccupied(log, innerText);
+				lister.DrawTexture(textures[CurrentFrame(textures.Count, (int)lookup["FPS"], (int)lookup["DELAY"])], width, height);
 			}
 			else
 			{

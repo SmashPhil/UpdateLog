@@ -8,9 +8,9 @@ namespace UpdateLogTool
 	{
 		public override (string, string) Tags => ("<anchor>", "</anchor>");
 
-		public override int HeightOccupied(string innerText)
+		public override int HeightOccupied(UpdateLog log, string fullText)
 		{
-			Text.Anchor = (TextAnchor)Enum.Parse(typeof(TextAnchor), innerText, true);
+			Text.Anchor = (TextAnchor)Enum.Parse(typeof(TextAnchor), fullText, true);
 			return 0;
 		}
 

@@ -15,6 +15,7 @@ namespace UpdateLogTool
 {
 	public class UpdateLog
 	{
+		public static string[] AllowedImageExtensions = { ".png", ".jpg", ".jpeg", ".psd", ".bmp" };
 		public ModContentPack Mod { get; private set; }
 		public UpdateLogData UpdateData { get; private set; }
 
@@ -35,51 +36,8 @@ namespace UpdateLogTool
 			UpdateData.rightIconBar ??= new List<UpdateLogData.HyperlinkedIcon>();
 			UpdateData.leftIconBar ??= new List<UpdateLogData.HyperlinkedIcon>();
 			UpdateData.images ??= new List<UpdateLogData.UploadedImages>();
-
 			cachedTextures = new Dictionary<string, Texture2D>();
-			if (Directory.Exists(FileReader.UpdateImagesDirectory(mod, loadFolder)))
-			{
-				foreach (var file in Directory.GetFiles(FileReader.UpdateImagesDirectory(mod, loadFolder)))
-				{
-					try
-					{
-						byte[] fileData = File.ReadAllBytes(file);
-						Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
-						tex.LoadImage(fileData);
-						tex.name = file.Split('\\').Last();
-						cachedTextures.Add(tex.name, tex);
-					}
-					catch (Exception ex)
-					{
-						Log.Error($"Unable to load file {file} into Texture2D. Are you using an unsupported image type? Exception=\"{ex.Message}\"");
-					}
-				}
-			}
-			if (Directory.Exists(FileReader.UpdateGifDirectory(mod, loadFolder)))
-			{
-				string[] gifDirectories = Directory.GetDirectories(FileReader.UpdateGifDirectory(mod, loadFolder));
-				foreach (string gif in gifDirectories)
-				{
-					string gifName = "Invalid Name";
-					try
-					{
-						gifName = Path.GetFileName(gif);
-						cachedGifs.Add(gifName, new List<Texture2D>());
-						foreach (var file in Directory.GetFiles(gif))
-						{
-							byte[] fileData = File.ReadAllBytes(file);
-							Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
-							tex.LoadImage(fileData);
-							tex.name = file.Split('\\').Last();
-							cachedGifs[gifName].Add(tex);
-						}
-					}
-					catch (Exception ex)
-					{
-						Log.Error($"Unable to load gif {gifName}. Are you using an unsupported image type? Skipping gif contents. Exception=\"{ex.Message}\"");
-					}
-				}
-			}
+			CacheImagesAndGifs(mod, loadFolder);
 		}
 
 		public UpdateLog(ModContentPack mod, string loadFolder, bool updateVersion = true)
@@ -100,17 +58,27 @@ namespace UpdateLogTool
 				UpdateData.leftIconBar = new List<UpdateLogData.HyperlinkedIcon>();
 			}
 			cachedTextures = new Dictionary<string, Texture2D>();
+			CacheImagesAndGifs(mod, loadFolder);
+		}
+
+		private void CacheImagesAndGifs(ModContentPack mod, string loadFolder)
+		{
+			cachedTextures = new Dictionary<string, Texture2D>();
 			if (Directory.Exists(FileReader.UpdateImagesDirectory(mod, loadFolder)))
 			{
-				foreach (var file in Directory.GetFiles(FileReader.UpdateImagesDirectory(mod, loadFolder)))
+				foreach (string file in Directory.GetFiles(FileReader.UpdateImagesDirectory(mod, loadFolder), "*", SearchOption.AllDirectories))
 				{
+					if (!AllowedImageExtensions.Contains(Path.GetExtension(file)))
+					{
+						continue;
+					}
 					try
 					{
 						byte[] fileData = File.ReadAllBytes(file);
 						Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
 						tex.LoadImage(fileData);
 						tex.name = file.Split('\\').Last();
-						cachedTextures.Add(tex.name, tex);
+						cachedTextures.Add(Path.GetFileNameWithoutExtension(tex.name), tex);
 					}
 					catch (Exception ex)
 					{

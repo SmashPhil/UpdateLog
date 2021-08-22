@@ -8,10 +8,10 @@ namespace UpdateLogTool
 	{
 		public override (string, string) Tags => ("<title>", "</title>");
 
-		public override int HeightOccupied(string innerText)
+		public override int HeightOccupied(UpdateLog log, string fullText)
 		{
 			Text.Font = GameFont.Small;
-			return (int)Text.CalcHeight(innerText, Dialog_NewUpdate.DialogWidth) + 5;
+			return (int)Text.CalcHeight(fullText, Dialog_NewUpdate.DialogWidth) + 5;
 		}
 
 		public override void SegmentAction(Listing_Rich lister, string innerText)

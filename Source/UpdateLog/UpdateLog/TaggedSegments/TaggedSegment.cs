@@ -13,7 +13,7 @@ namespace UpdateLogTool
 
 		/// <param name="innerText"></param>
 		/// <returns>Height reserved for Scrollview in Update Dialog</returns>
-		public virtual int HeightOccupied(string innerText) => 0;
+		public virtual int HeightOccupied(UpdateLog log, string fullText) => 0;
 
 		/// <summary>
 		/// Performs action given text between tags

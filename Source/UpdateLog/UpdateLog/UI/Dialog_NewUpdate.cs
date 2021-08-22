@@ -90,28 +90,22 @@ namespace UpdateLogTool
 			{
 				foreach (var iconObj in CurrentLog.UpdateData.rightIconBar)
 				{
-					if (CurrentLog.cachedTextures.TryGetValue(iconObj.icon, out Texture2D texture))
+					if (!CurrentLog.cachedTextures.TryGetValue(iconObj.icon, out Texture2D texture))
 					{
-						cachedRightIconBar.Add(new Tuple<string, string, Texture2D>(iconObj.name, iconObj.url, texture));
+						texture = BaseContent.BadTex;
 					}
-					else
-					{
-						Log.ErrorOnce($"Unable to retrieve cached texture for icon: {iconObj.icon}", iconObj.icon.GetHashCode());
-					}
+					cachedRightIconBar.Add(new Tuple<string, string, Texture2D>(iconObj.name, iconObj.url, texture));
 				}
 			}
 			if (CurrentLog.UpdateData.leftIconBar.Any())
 			{
 				foreach (var iconObj in CurrentLog.UpdateData.leftIconBar)
 				{
-					if (CurrentLog.cachedTextures.TryGetValue(iconObj.icon, out Texture2D texture))
+					if (!CurrentLog.cachedTextures.TryGetValue(iconObj.icon, out Texture2D texture))
 					{
-						cachedLeftIconBar.Add(new Tuple<string, string, Texture2D>(iconObj.name, iconObj.url, texture));
+						texture = BaseContent.BadTex;
 					}
-					else
-					{
-						Log.ErrorOnce($"Unable to retrieve cached texture for icon: {iconObj.icon}", iconObj.icon.GetHashCode());
-					}
+					cachedLeftIconBar.Add(new Tuple<string, string, Texture2D>(iconObj.name, iconObj.url, texture));
 				}
 			}
 		}
@@ -126,7 +120,7 @@ namespace UpdateLogTool
 			{
 				if (data.tag is TaggedSegment tag)
 				{
-					height += tag.HeightOccupied(data.text);
+					height += tag.HeightOccupied(CurrentLog, data.text);
 				}
 				else
 				{
