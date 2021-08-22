@@ -30,7 +30,12 @@ Due to the way xml handles the < > & ' and " characters, you cannot directly typ
 
 **Fields**  
 `<currentVersion></currentVersion>`  
-The current version of the mod. This accepts a string so input whatever you like although the format for versions is *generally* x.x.x for major, minor, and patch versions. For example this project is currently on 1.0.0 due to its first release.
+The current version of the mod. This accepts a string so input whatever you like although the format for versions is *generally* x.x.x for major, minor, and patch versions.
+
+eg.
+```xml
+<currentVersion>1.3.1092</currentVersion>
+```
 
 `<updateOn></updateOn>`  
 This determines when your UpdateLog.xml file will be checked for a new update and subsequently displayed. There are 4 options:  
