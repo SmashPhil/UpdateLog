@@ -75,6 +75,12 @@ namespace UpdateLogTool
 				mod = log.Mod;
 				metaData = ModLister.GetModWithIdentifier(mod.PackageId);
 				segments = EnhancedText.ParseDescriptionData(log).ToList();
+				//Newlines will end in \n even on windows, xml reader string isn't able to use string.EndsWith for Environment.NewLine
+				if (segments.LastOrDefault() is DescriptionData data && (data.text.NullOrEmpty() || data.text.Last() != '\n'))
+				{
+					segments.Add(new DescriptionData(Environment.NewLine)); //Append new line to description if not present.
+				}
+
 				versionSegment = new DescriptionData($"<b>Version {CurrentLog.UpdateData.currentVersion}</b>");
 				RecacheHyperlinks();
 				cachedHeightDirty = true;
@@ -128,6 +134,7 @@ namespace UpdateLogTool
 					height += Text.CalcHeight(data.text, rect.width);
 				}
 			}
+			height += Text.CalcHeight("BottomPadding", rect.width);
 
 			GUI.color = color;
 			Text.Anchor = anchor;
@@ -224,8 +231,10 @@ namespace UpdateLogTool
 
 			Widgets.BeginScrollView(lowerRect, ref scrollPosition, viewRect);
 			lister.Begin(viewRect);
+
 			Text.Anchor = TextAnchor.MiddleCenter;
 			lister.RichText(versionSegment);
+
 			Text.Anchor = TextAnchor.MiddleLeft;
 			foreach (DescriptionData segment in segments)
 			{

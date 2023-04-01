@@ -18,9 +18,11 @@ namespace UpdateLogTool
 		{
 			var font = Text.Font;
 			Text.Font = GameFont.Small;
-			innerText = "<b>" + innerText + "</b>";
-			Rect labelRect = lister.Label(innerText);
-			Widgets.DrawLineHorizontal(0, labelRect.y + Text.CalcHeight(innerText, 9999), labelRect.width);
+			{
+				innerText = "<b>" + innerText + "</b>";
+				Rect labelRect = lister.Label(innerText);
+				Widgets.DrawLineHorizontal(0, labelRect.y + Text.CalcHeight(innerText, 9999), labelRect.width);
+			}
 			Text.Font = font;
 		}
 	}
