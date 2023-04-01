@@ -239,8 +239,8 @@ namespace UpdateLogTool
 				get
 				{
 					string enhancedDesc = description;
-					enhancedDesc = enhancedDesc.Replace('[', '<');
-					enhancedDesc = enhancedDesc.Replace(']', '>');
+					//enhancedDesc = enhancedDesc.Replace('[', '<');
+					//enhancedDesc = enhancedDesc.Replace(']', '>');
 					return enhancedDesc;
 				}
 			}

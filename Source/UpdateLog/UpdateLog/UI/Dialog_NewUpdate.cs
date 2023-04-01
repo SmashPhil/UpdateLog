@@ -116,6 +116,7 @@ namespace UpdateLogTool
 			var font = Text.Font;
 			var anchor = Text.Anchor;
 			var color = GUI.color;
+
 			foreach (DescriptionData data in segments)
 			{
 				if (data.tag is TaggedSegment tag)
@@ -127,6 +128,7 @@ namespace UpdateLogTool
 					height += Text.CalcHeight(data.text, rect.width);
 				}
 			}
+
 			GUI.color = color;
 			Text.Anchor = anchor;
 			Text.Font = font;
