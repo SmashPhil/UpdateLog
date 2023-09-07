@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.IO;
 using Verse;
+using Verse.Sound;
 using RimWorld;
 using UnityEngine;
 
@@ -282,12 +283,16 @@ namespace UpdateLogTool
 			{
 				GUI.color = GenUI.MouseoverColor;
 			}
-			Widgets.Label(leftButtonRect, leftArrow);
-			if (Widgets.ButtonInvisible(leftButtonRect))
+			if (pageCount > 1)
 			{
-				--pageNumber;
-				pageNumber = Mathf.Clamp(pageNumber, 1, pageCount);
-				clicked = true;
+				Widgets.Label(leftButtonRect, leftArrow);
+				if (Widgets.ButtonInvisible(leftButtonRect))
+				{
+					SoundDefOf.Click.PlayOneShotOnCamera();
+					--pageNumber;
+					pageNumber = Mathf.Clamp(pageNumber, 1, pageCount);
+					clicked = true;
+				}
 			}
 			GUI.color = color;
 
@@ -296,12 +301,16 @@ namespace UpdateLogTool
 			{
 				GUI.color = GenUI.MouseoverColor;
 			}
-			Widgets.Label(rightButtonRect, rightArrow);
-			if (Widgets.ButtonInvisible(rightButtonRect))
+			if (pageCount > 1)
 			{
-				++pageNumber;
-				pageNumber = Mathf.Clamp(pageNumber, 1, pageCount);
-				clicked = true;
+				Widgets.Label(rightButtonRect, rightArrow);
+				if (Widgets.ButtonInvisible(rightButtonRect))
+				{
+					SoundDefOf.Click.PlayOneShotOnCamera();
+					++pageNumber;
+					pageNumber = Mathf.Clamp(pageNumber, 1, pageCount);
+					clicked = true;
+				}
 			}
 			GUI.color = color;
 
@@ -320,6 +329,7 @@ namespace UpdateLogTool
 				pageRect.x = pageNumberingOrigin + (numbersLength / pageNumbersDisplayedTotal * offsetRight);
 				if (Widgets.ButtonText(pageRect, pageLeftDisplayNum.ToString(), false))
 				{
+					SoundDefOf.Click.PlayOneShotOnCamera();
 					pageNumber = pageLeftDisplayNum;
 					clicked = true;
 				}
@@ -330,6 +340,7 @@ namespace UpdateLogTool
 				pageRect.x = pageNumberingOrigin - (numbersLength / pageNumbersDisplayedTotal * offsetLeft);
 				if (Widgets.ButtonText(pageRect, pageRightDisplayNum.ToString(), false))
 				{
+					SoundDefOf.Click.PlayOneShotOnCamera();
 					pageNumber = pageRightDisplayNum;
 					clicked = true;
 				}

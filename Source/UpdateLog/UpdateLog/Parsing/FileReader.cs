@@ -42,7 +42,7 @@ namespace UpdateLogTool
 			}
 			catch(Exception ex)
 			{
-				Log.Error($"Exception thrown while attempting to read in UpdateLog data for {mod.Name}.\nException=\"{ex.Message}\" StackTrace=\"{ex.StackTrace}\"");
+				Log.Error($"Exception thrown while attempting to read in UpdateLog data for {mod.Name}.\nException=\"{ex}\"");
 			}
 			return null;
 		}
@@ -79,7 +79,7 @@ namespace UpdateLogTool
 			}
 			catch (Exception ex)
 			{
-				Log.Error($"Exception thrown while attempting to read in UpdateLog data for {mod.Name}.\nException=\"{ex.Message}\" StackTrace=\"{ex.StackTrace}\"");
+				Log.Error($"Exception thrown while attempting to read in UpdateLog data for {mod.Name}.\nException=\"{ex}\"");
 			}
 			return updates;
 		}
@@ -219,7 +219,7 @@ namespace UpdateLogTool
 			}
 			catch (Exception ex)
 			{
-				Log.Error($"Exception loading file at {filePath}. Loading defaults instead. Exception={ex.Message}");
+				Log.Error($"Exception loading file at {filePath}. Loading defaults instead. Exception={ex}");
 			}
 			return data;
 		}
@@ -238,13 +238,13 @@ namespace UpdateLogTool
 					}
 					catch (Exception ex)
 					{
-						Log.Error($"Exception loading list element from XML. Ex={ex.Message} Xml={listRootNode.OuterXml}");
+						Log.Error($"Exception loading list element from XML. Ex={ex}\nXml={listRootNode.OuterXml}");
 					}
 				}
 			}
 			catch (Exception ex2)
 			{
-				Log.Error($"Exception loading list element from XML. Ex={ex2.Message} Xml={listRootNode.OuterXml}");
+				Log.Error($"Exception loading list element from XML. Ex={ex2.Message}\nXml={listRootNode.OuterXml}");
 			}
 			return list;
 		}
@@ -263,13 +263,13 @@ namespace UpdateLogTool
 					}
 					catch (Exception ex)
 					{
-						Log.Error($"Exception loading list element from XML. Ex={ex.Message} Xml={listRootNode.OuterXml}");
+						Log.Error($"Exception loading list element from XML. Ex={ex}\nXml={listRootNode.OuterXml}");
 					}
 				}
 			}
 			catch (Exception ex2)
 			{
-				Log.Error($"Exception loading list element from XML. Ex={ex2.Message} Xml={listRootNode.OuterXml}");
+				Log.Error($"Exception loading list element from XML. Ex={ex2}\nXml={listRootNode.OuterXml}");
 			}
 			return list;
 		}

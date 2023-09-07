@@ -90,7 +90,7 @@ namespace UpdateLogTool
 			}
 			catch (Exception ex)
 			{
-				Log.ErrorOnce($"Exception thrown grabbing inner properties {bracketText}\nFailed: {step}\nException={ex.Message}", bracketText.GetHashCode());
+				Log.ErrorOnce($"Exception thrown grabbing inner properties {bracketText}\nFailed: {step}\nException={ex}", bracketText.GetHashCode());
 			}
 
 			return (width, height, customValues);

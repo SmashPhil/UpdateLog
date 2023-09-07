@@ -82,7 +82,7 @@ namespace UpdateLogTool
 					}
 					catch (Exception ex)
 					{
-						Log.Error($"Unable to load file {file} into Texture2D. Are you using an unsupported image type? Exception=\"{ex.Message}\"");
+						Log.Error($"Unable to load file {file} into Texture2D. Are you using an unsupported image type? Exception=\"{ex}\"");
 					}
 				}
 			}
@@ -107,7 +107,7 @@ namespace UpdateLogTool
 					}
 					catch (Exception ex)
 					{
-						Log.Error($"Unable to load gif {gifName}. Are you using an unsupported image type? Skipping gif contents. Exception=\"{ex.Message}\"");
+						Log.Error($"Unable to load gif {gifName}. Are you using an unsupported image type? Skipping gif contents. Exception=\"{ex}\"");
 					}
 				}
 			}
@@ -196,7 +196,7 @@ namespace UpdateLogTool
 			}
 			catch (Exception ex)
 			{
-				Log.Error($"[UpdateLog] Unable to save UpdateLog config info. Exception=\"{ex.Message}\"");
+				Log.Error($"[UpdateLog] Unable to save UpdateLog config info. Exception=\"{ex}\"");
 			}
 		}
 
@@ -230,7 +230,7 @@ namespace UpdateLogTool
 				}
 				catch (Exception ex)
 				{
-					Log.Error($"Unable to invoke method on update. Method could not be found: {actionOnUpdate ?? "Null"} Ex={ex.Message}");
+					Log.Error($"Unable to invoke method on update. Method could not be found: {actionOnUpdate ?? "Null"} Ex={ex}");
 				}
 			}
 
