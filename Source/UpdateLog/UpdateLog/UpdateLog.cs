@@ -20,7 +20,9 @@ namespace UpdateLogTool
 		public static string[] AllowedImageExtensions = { ".png", ".jpg", ".jpeg", ".psd", ".bmp" };
 		
 		public ModContentPack Mod { get; private set; }
+
 		public UpdateLogData UpdateData { get; private set; }
+
 		public string CurrentFolder { get; private set; }
 
 		public bool Disposed { get; private set; }
