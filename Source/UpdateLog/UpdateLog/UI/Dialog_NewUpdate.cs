@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Diagnostics;
 using Verse;
 using Verse.Sound;
 using RimWorld;
@@ -12,7 +13,7 @@ namespace UpdateLogTool
 {
 	public class Dialog_NewUpdate : Window
 	{
-		public const float DialogWidth = 600;
+		public const float DialogWidth = 700;
 		public const float DialogHeight = 740;
 		public const float Footer = 25;
 
@@ -72,9 +73,13 @@ namespace UpdateLogTool
 				{
 					return;
 				}
+				if (log != null)
+				{
+					log.Dispose(); //Dispose old log
+				}
 				log = value;
 				mod = log.Mod;
-				metaData = ModLister.GetModWithIdentifier(mod.PackageId);
+				metaData = ModLister.GetActiveModWithIdentifier(mod.PackageId, ignorePostfix: true);
 				segments = EnhancedText.ParseDescriptionData(log).ToList();
 				//Newlines will end in \n even on windows, xml reader string isn't able to use string.EndsWith for Environment.NewLine
 				if (segments.LastOrDefault() is DescriptionData data && (data.text.NullOrEmpty() || data.text.Last() != '\n'))
@@ -83,17 +88,24 @@ namespace UpdateLogTool
 				}
 
 				versionSegment = new DescriptionData($"<b>Version {CurrentLog.UpdateData.currentVersion}</b>");
+				log.Open();
 				RecacheHyperlinks();
 				cachedHeightDirty = true;
 				lister.CurrentLog = CurrentLog;
 			}
 		}
 
-		public void RecacheHyperlinks()
+		public override void PostClose()
+		{
+			base.PostClose();
+			log.Dispose();
+		}
+
+		private void RecacheHyperlinks()
 		{
 			cachedRightIconBar.Clear();
 			cachedLeftIconBar.Clear();
-			if (CurrentLog.UpdateData.rightIconBar.Any())
+			if (!CurrentLog.UpdateData.rightIconBar.NullOrEmpty())
 			{
 				foreach (var iconObj in CurrentLog.UpdateData.rightIconBar)
 				{
@@ -104,7 +116,7 @@ namespace UpdateLogTool
 					cachedRightIconBar.Add(new Tuple<string, string, Texture2D>(iconObj.name, iconObj.url, texture));
 				}
 			}
-			if (CurrentLog.UpdateData.leftIconBar.Any())
+			if (!CurrentLog.UpdateData.leftIconBar.NullOrEmpty())
 			{
 				foreach (var iconObj in CurrentLog.UpdateData.leftIconBar)
 				{
@@ -117,7 +129,7 @@ namespace UpdateLogTool
 			}
 		}
 
-		public void RecacheHeight(Rect rect)
+		private void RecacheHeight(Rect rect)
 		{
 			float height = 0;
 			var font = Text.Font;

@@ -12,6 +12,7 @@ namespace UpdateLogTool
 	{
 		private const string LineBreakTag = "<br/>";
 		private static readonly GUIContent tmpTextGUIContent = new GUIContent();
+		private static readonly Color disabledColor = new Color(0.2f, 0.2f, 0.2f);
 
 		public UpdateLog CurrentLog { get; set; }
 
@@ -34,6 +35,45 @@ namespace UpdateLogTool
 				width = width
 			};
 			GUI.DrawTexture(imageRect, texture);
+		}
+
+		public void DrawGif(Texture2D texture, float width, float height, IntVec2 size, int fps = 60)
+		{
+			NewColumnIfNeeded(height);
+			Rect rect = GetRect(height);
+			Rect imageRect = new Rect(rect)
+			{
+				x = (rect.width - width) / 2,
+				height = height,
+				width = width
+			};
+			int frame = Mathf.FloorToInt((Time.time * fps) % (size.x * size.z));
+			float frameX = (frame % (float)size.x) / size.x;
+			float frameY = 1 - (Mathf.FloorToInt(frame / (float)size.z) + 1) / (float)size.z;
+			Rect texCoords = new Rect(frameX, frameY, 1f / size.x, 1f / size.z);
+			GUI.DrawTextureWithTexCoords(imageRect, texture, texCoords);
+		}
+
+		public void DrawLoadingPlaceholder(float width, float height, string loadingMessage)
+		{
+			NewColumnIfNeeded(height);
+			Rect rect = GetRect(height);
+			Rect imageRect = new Rect(rect)
+			{
+				x = (rect.width - width) / 2,
+				height = height,
+				width = width
+			};
+			Widgets.DrawBoxSolid(imageRect, disabledColor);
+			if (!loadingMessage.NullOrEmpty())
+			{
+				TextAnchor anchor = Text.Anchor;
+				{
+					Text.Anchor = TextAnchor.MiddleCenter;
+					Widgets.Label(imageRect, loadingMessage);
+				}
+				Text.Anchor = anchor;
+			}
 		}
 
 		public void RichText(DescriptionData segment)

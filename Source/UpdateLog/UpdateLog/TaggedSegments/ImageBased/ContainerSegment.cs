@@ -8,11 +8,23 @@ namespace UpdateLogTool
 {
 	public abstract class ContainerSegment : TaggedSegment
 	{
-		protected string GetInnerText(string fullText)
+		protected virtual IEnumerable<(string name, Type type)> Attributes
+		{
+			get
+			{
+				yield return (TagNames.Width, typeof(int));
+				yield return (TagNames.Height, typeof(int));
+			}
+		}
+
+		protected virtual string GetInnerText(string fullText)
 		{
 			string[] innerTexts = fullText.Split('>');
-			string innerText = innerTexts.Last();
-			return innerText;
+			if (innerTexts.Length > 1)
+			{
+				return innerTexts[1].Split('<').FirstOrDefault();
+			}
+			return fullText;
 		}
 
 		public override int HeightOccupied(UpdateLog log, string fullText)
@@ -30,14 +42,25 @@ namespace UpdateLogTool
 			{
 				string bracketText = fullTexts[0];
 				innerText = fullTexts.Last();
-				(int widthOut, int heightOut, _) = ContainerAttributes(bracketText);
-				width = widthOut;
-				height = height == heightOut ? width : heightOut;
+				Lookup lookup = ContainerAttributes(bracketText);
+
+				width = lookup.Get(TagNames.Width, width);
+				height = lookup.Get(TagNames.Height, width);
 			}
 			string innerInnerText = GetInnerText(innerText);
-			if (log.cachedTextures.TryGetValue(innerInnerText, out Texture2D texture) && height == width)
+			if (log.cachedTextures.TryGetValue(innerInnerText, out Texture2D texture))
 			{
-				height = Mathf.CeilToInt(texture.height / (float)texture.width * width);
+				if (height == width && texture)
+				{
+					height = Mathf.CeilToInt(texture.height / (float)texture.width * width);
+				}
+			}
+			else if (log.cachedDownloadedTextures.TryGetValue(innerInnerText, out WebTexture webTexture))
+			{
+				if (height == width && webTexture.texture)
+				{
+					height = Mathf.CeilToInt(webTexture.texture.height / (float)webTexture.texture.width * width);
+				}
 			}
 			return height;
 		}
@@ -50,40 +73,31 @@ namespace UpdateLogTool
 			return (name, value);
 		}
 
-		protected virtual Dictionary<string, object> HandleCustomAttribute(string name, string value)
+		protected Lookup ContainerAttributes(string bracketText)
 		{
-			Log.ErrorOnce($"Attribute: {name} is not valid for {GetType()} segment.", name.GetHashCode());
-			return new Dictionary<string, object>();
-		}
-
-		protected (int width, int height, Dictionary<string, object> customValues) ContainerAttributes(string bracketText)
-		{
-			int width = Mathf.FloorToInt(Dialog_NewUpdate.DialogWidth);
-			int height = width;
-			Dictionary<string, object> customValues = new Dictionary<string, object>();
+			Lookup lookup = new Lookup();
 			string step = "Splitting bracketText";
 			try
 			{
 				string[] attributes = bracketText.Split('>');
 				if (attributes.Length > 0)
 				{
+					List<(string key, Type type)> registeredAttributes = Attributes.ToList();
 					string[] properties = attributes[0].Split(' ');
 					foreach (string attribute in properties.Where(s => !string.IsNullOrWhiteSpace(s)))
 					{
 						step = attribute;
 						(string name, string value) = ParseAttribute(attribute);
 						value = value.Trim('\"');
-						if (name.ToUpperInvariant() == "HEIGHT")
+
+						foreach ((string key, Type type) in registeredAttributes)
 						{
-							int.TryParse(value, out height);
-						}
-						else if (name.ToUpperInvariant() == "WIDTH")
-						{
-							int.TryParse(value, out width);
-						}
-						else
-						{
-							customValues.AddRange(HandleCustomAttribute(name, value));
+							if (name.ToUpperInvariant() == key.ToUpperInvariant())
+							{
+								object result = ParseHelper.FromString(value, type);
+								lookup[name.ToUpperInvariant()] = result;
+								break;
+							}
 						}
 					}
 				}
@@ -92,8 +106,7 @@ namespace UpdateLogTool
 			{
 				Log.ErrorOnce($"Exception thrown grabbing inner properties {bracketText}\nFailed: {step}\nException={ex}", bracketText.GetHashCode());
 			}
-
-			return (width, height, customValues);
+			return lookup;
 		}
 	}
 }

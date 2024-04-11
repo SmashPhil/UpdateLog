@@ -8,23 +8,33 @@ namespace UpdateLogTool
 {
 	public class GifSegment : AnimatedSegment
 	{
+		private static readonly IntVec2 defaultGifSize = new IntVec2(10, 10);
+
 		public override (string, string) Tags => ("<gif", "</gif>");
 
 		protected override int DefaultFramesPerSecond => 30;
 
-		public override void SegmentAction(Listing_Rich lister, string innerText)
+		protected override IEnumerable<(string name, Type type)> Attributes
 		{
-			string innerInnerText = GetInnerText(innerText);
-			if (lister.CurrentLog is UpdateLog log && log.cachedGifs.TryGetValue(innerInnerText, out List<Texture2D> textures))
+			get
 			{
-				(int width, _, Dictionary<string, object> lookup) = ContainerAttributes(innerText);
-				int height = HeightOccupied(log, innerText);
-				lister.DrawTexture(textures[CurrentFrame(textures.Count, (int)lookup["FPS"], (int)lookup["DELAY"])], width, height);
+				foreach (var attribute in base.Attributes)
+				{
+					yield return attribute;
+				}
+				yield return (TagNames.FPS, typeof(int));
+				yield return (TagNames.Size, typeof(IntVec2));
 			}
-			else
-			{
-				Log.ErrorOnce($"Failed to retrieve cached gif frame for {innerInnerText}.", innerInnerText.GetHashCode());
-			}
+		}
+
+		protected override void RenderImage(Listing_Rich lister, string innerText, Texture2D texture)
+		{
+			Lookup lookup = ContainerAttributes(innerText);
+			int width = lookup.Get(TagNames.Width, Mathf.RoundToInt(Dialog_NewUpdate.DialogWidth));
+			int height = HeightOccupied(lister.CurrentLog, innerText);
+			IntVec2 size = lookup.Get(TagNames.Size, defaultGifSize);
+			int fps = lookup.Get(TagNames.FPS, 30);
+			lister.DrawGif(texture, width, height, size, fps: fps);
 		}
 	}
 }

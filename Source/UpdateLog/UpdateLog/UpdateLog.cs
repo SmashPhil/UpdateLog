@@ -6,6 +6,8 @@ using System.Linq;
 using System.Collections;
 using System.Xml;
 using System.Xml.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using RimWorld;
 using Verse;
 using UnityEngine;
@@ -13,16 +15,20 @@ using UnityEngine.Networking;
 
 namespace UpdateLogTool
 {
-	public class UpdateLog
+	public class UpdateLog : IDisposable
 	{
 		public static string[] AllowedImageExtensions = { ".png", ".jpg", ".jpeg", ".psd", ".bmp" };
+		
 		public ModContentPack Mod { get; private set; }
 		public UpdateLogData UpdateData { get; private set; }
-
 		public string CurrentFolder { get; private set; }
 
-		public Dictionary<string, Texture2D> cachedTextures;
-		public Dictionary<string, List<Texture2D>> cachedGifs = new Dictionary<string, List<Texture2D>>();
+		public bool Disposed { get; private set; }
+
+
+		public Dictionary<string, Texture2D> cachedTextures = new Dictionary<string, Texture2D>();
+
+		public Dictionary<string, WebTexture> cachedDownloadedTextures = new Dictionary<string, WebTexture>();
 
 		public UpdateLog (ModContentPack mod, string loadFolder, string path, bool updateVersion = true)
 		{
@@ -36,8 +42,7 @@ namespace UpdateLogTool
 			UpdateData.rightIconBar ??= new List<UpdateLogData.HyperlinkedIcon>();
 			UpdateData.leftIconBar ??= new List<UpdateLogData.HyperlinkedIcon>();
 			UpdateData.images ??= new List<UpdateLogData.UploadedImages>();
-			cachedTextures = new Dictionary<string, Texture2D>();
-			CacheImagesAndGifs(mod, loadFolder);
+			Disposed = true;
 		}
 
 		public UpdateLog(ModContentPack mod, string loadFolder, bool updateVersion = true)
@@ -57,16 +62,40 @@ namespace UpdateLogTool
 			{
 				UpdateData.leftIconBar = new List<UpdateLogData.HyperlinkedIcon>();
 			}
-			cachedTextures = new Dictionary<string, Texture2D>();
-			CacheImagesAndGifs(mod, loadFolder);
+			Disposed = true;
 		}
 
-		private void CacheImagesAndGifs(ModContentPack mod, string loadFolder)
+		public void Open()
 		{
-			cachedTextures = new Dictionary<string, Texture2D>();
-			if (Directory.Exists(FileReader.UpdateImagesDirectory(mod, loadFolder)))
+			if (!Disposed)
 			{
-				foreach (string file in Directory.GetFiles(FileReader.UpdateImagesDirectory(mod, loadFolder), "*", SearchOption.AllDirectories))
+				Dispose();
+			}
+			CacheImages();
+			DownloadImages();
+			Disposed = false;
+		}
+
+		public void Dispose()
+		{
+			foreach (Texture2D texture in cachedTextures.Values)
+			{
+				GameObject.Destroy(texture);
+			}
+			foreach (WebTexture webTexture in cachedDownloadedTextures.Values)
+			{
+				webTexture.Dispose();
+			}
+			cachedTextures.Clear();
+			Disposed = true;
+			
+		}
+
+		private void CacheImages()
+		{
+			if (Directory.Exists(FileReader.UpdateImagesDirectory(Mod, CurrentFolder)))
+			{
+				foreach (string file in Directory.GetFiles(FileReader.UpdateImagesDirectory(Mod, CurrentFolder), "*", SearchOption.AllDirectories))
 				{
 					if (!AllowedImageExtensions.Contains(Path.GetExtension(file)))
 					{
@@ -86,31 +115,62 @@ namespace UpdateLogTool
 					}
 				}
 			}
-			if (Directory.Exists(FileReader.UpdateGifDirectory(mod, loadFolder)))
+		}
+
+		private void DownloadImages()
+		{
+			if (!UpdateData.images.NullOrEmpty())
 			{
-				string[] gifDirectories = Directory.GetDirectories(FileReader.UpdateGifDirectory(mod, loadFolder));
-				foreach (string gif in gifDirectories)
+				//Populate keys so the UI knows to wait before rendering
+				foreach (UpdateLogData.UploadedImages image in UpdateData.images)
 				{
-					string gifName = "Invalid Name";
+					if (!cachedDownloadedTextures.ContainsKey(image.name))
+					{
+						cachedDownloadedTextures[image.name] = new WebTexture();
+					}
+				}
+				BeginDownloadingAsync();
+			}
+		}
+
+		private void BeginDownloadingAsync()
+		{
+			//Download textures
+			Task.Run(async delegate ()
+			{
+				foreach (UpdateLogData.UploadedImages image in UpdateData.images)
+				{
+					WebTexture webTexture = cachedDownloadedTextures[image.name];
+					webTexture.Status = DownloadStatus.InProgress;
 					try
 					{
-						gifName = Path.GetFileName(gif);
-						cachedGifs.Add(gifName, new List<Texture2D>());
-						foreach (var file in Directory.GetFiles(gif))
+						Texture2D texture = await FileReader.GetTextureFromURL(image.url);
+						if (texture)
 						{
-							byte[] fileData = File.ReadAllBytes(file);
-							Texture2D tex = new Texture2D(2, 2, TextureFormat.Alpha8, true);
-							tex.LoadImage(fileData);
-							tex.name = file.Split('\\').Last();
-							cachedGifs[gifName].Add(tex);
+							webTexture.SetTexture(texture);
+							if (webTexture.texture)
+							{
+								webTexture.Status = DownloadStatus.Success;
+							}
+							else
+							{
+								webTexture.Status = DownloadStatus.Failed;
+							}
+						}
+						else
+						{
+							webTexture.SetTexture(null);
+							webTexture.Status = DownloadStatus.Failed;
 						}
 					}
 					catch (Exception ex)
 					{
-						Log.Error($"Unable to load gif {gifName}. Are you using an unsupported image type? Skipping gif contents. Exception=\"{ex}\"");
+						Log.Error($"Exception thrown while trying to fetch image from {image.url}.\nException={ex}");
+						webTexture.SetTexture(null);
+						webTexture.Status = DownloadStatus.Failed;
 					}
 				}
-			}
+			});
 		}
 
 		public string UpdateLogVersionFile(string xmlVersion)
@@ -154,7 +214,7 @@ namespace UpdateLogTool
 											  new XElement("testing", UpdateData.testing)));
 				if (!UpdateData.rightIconBar.NullOrEmpty())
 				{
-					doc.Element("UpdateLog").Add(new XComment("Icon bar shown to the right of the mod's name"));
+					doc.Element("UpdateLog").Add(new XComment("Icon bar shown to the right of the mod's name."));
 					doc.Element("UpdateLog").Add(new XElement("rightIconBar"));
 					foreach (var item in UpdateData.rightIconBar)
 					{
@@ -166,7 +226,7 @@ namespace UpdateLogTool
 				}
 				if (!UpdateData.leftIconBar.NullOrEmpty())
 				{
-					doc.Element("UpdateLog").Add(new XComment("Icon bar shown to the left of the mod's name"));
+					doc.Element("UpdateLog").Add(new XComment("Icon bar shown to the left of the mod's name."));
 					doc.Element("UpdateLog").Add(new XElement("leftIconBar"));
 					foreach (var item in UpdateData.leftIconBar)
 					{
@@ -178,18 +238,13 @@ namespace UpdateLogTool
 				}
 				if (!UpdateData.images.NullOrEmpty())
 				{
-					doc.Element("UpdateLog").Add(new XComment("WIP - Do not use right now"));
+					doc.Element("UpdateLog").Add(new XComment("Images to download off the web to reference from the description."));
 					doc.Element("UpdateLog").Add(new XElement("images"));
 					foreach (var item in UpdateData.images)
 					{
 						doc.Element("UpdateLog").Element("images").Add(new XElement("li", 
 																	new XElement("name", item.name), 
-																	new XElement("urls")));
-						foreach (var url in item.urls)
-						{
-							doc.Element("UpdateLog").Element("images").Element("li").Element("urls").Add(new XElement("li",
-																										new XElement(url)));
-						}
+																	new XElement("url", item.url)));
 					}
 				}
 				doc.Save(Path.Combine(FileReader.UpdateLogDirectory(Mod, CurrentFolder), FileReader.UpdateLogFileName));
@@ -198,6 +253,40 @@ namespace UpdateLogTool
 			{
 				Log.Error($"[UpdateLog] Unable to save UpdateLog config info. Exception=\"{ex}\"");
 			}
+		}
+
+		public static bool operator ==(UpdateLog lhs, UpdateLog rhs)
+		{
+			if (lhs is null)
+			{
+				return rhs is null;
+			}
+			if (rhs is null)
+			{
+				return lhs is null;
+			}
+			return lhs.Equals(rhs);
+		}
+
+		public static bool operator !=(UpdateLog lhs, UpdateLog rhs)
+		{
+			return !(lhs == rhs);
+		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is UpdateLog log && Equals(log);
+		}
+
+		public bool Equals(UpdateLog log)
+		{
+			Log.Message($"Mod: {Mod is null} Log: {log is null} UpdateData: {UpdateData is null} LogUpdateData: {log?.UpdateData is null}");
+			return Mod == log.Mod && UpdateData.currentVersion == log.UpdateData.currentVersion;
+		}
+
+		public override int GetHashCode()
+		{
+			return Gen.HashCombine(Mod.Name.GetHashCode(), UpdateData.currentVersion);
 		}
 
 		public class UpdateLogData
@@ -267,7 +356,7 @@ namespace UpdateLogTool
 				/// <summary>
 				/// url to directory containing image
 				/// </summary>
-				public List<string> urls;
+				public string url;
 			}
 		}
 	}

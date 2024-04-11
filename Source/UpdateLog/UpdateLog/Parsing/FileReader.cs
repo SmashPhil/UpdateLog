@@ -3,9 +3,12 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
+using System.Threading.Tasks;
 using Verse;
 using RimWorld;
-using HarmonyLib;
+using UnityEngine;
+using UnityEngine.Networking;
 
 namespace UpdateLogTool
 {
@@ -143,8 +146,7 @@ namespace UpdateLogTool
 				DirectoryInfo[] directories = metaData.RootDir.GetDirectories();
 				for (int i = 0; i < directories.Length; i++)
 				{
-					Version version2;
-					if (VersionControl.TryParseVersionString(directories[i].Name, out version2) && version2 > version)
+					if (VersionControl.TryParseVersionString(directories[i].Name, out Version version2) && version2 > version)
 					{
 						version = version2;
 					}
@@ -229,9 +231,8 @@ namespace UpdateLogTool
 			List<UpdateLog.UpdateLogData.HyperlinkedIcon> list = new List<UpdateLog.UpdateLogData.HyperlinkedIcon>();
 			try
 			{
-				foreach (object obj in listRootNode.ChildNodes)
+				foreach (XmlNode xmlNode in listRootNode.ChildNodes)
 				{
-					XmlNode xmlNode = (XmlNode)obj;
 					try
 					{
 						list.Add(DirectXmlToObject.ObjectFromXml<UpdateLog.UpdateLogData.HyperlinkedIcon>(xmlNode, true));
@@ -254,9 +255,8 @@ namespace UpdateLogTool
 			List<UpdateLog.UpdateLogData.UploadedImages> list = new List<UpdateLog.UpdateLogData.UploadedImages>();
 			try
 			{
-				foreach (object obj in listRootNode.ChildNodes)
+				foreach (XmlNode xmlNode in listRootNode.ChildNodes)
 				{
-					XmlNode xmlNode = (XmlNode)obj;
 					try
 					{
 						list.Add(DirectXmlToObject.ObjectFromXml<UpdateLog.UpdateLogData.UploadedImages>(xmlNode, true));
@@ -272,6 +272,25 @@ namespace UpdateLogTool
 				Log.Error($"Exception loading list element from XML. Ex={ex2}\nXml={listRootNode.OuterXml}");
 			}
 			return list;
+		}
+
+		public static async Task<Texture2D> GetTextureFromURL(string url)
+		{
+			using (UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(url))
+			{
+				UnityWebRequestAsyncOperation operation = webRequest.SendWebRequest();
+
+				while (!operation.isDone)
+				{
+					await Task.Delay(33);
+				}
+
+				if (webRequest.isNetworkError || webRequest.isHttpError)
+				{
+					return null;
+				}
+				return DownloadHandlerTexture.GetContent(webRequest);
+			}
 		}
 	}
 }

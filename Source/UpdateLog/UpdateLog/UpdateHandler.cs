@@ -76,22 +76,34 @@ namespace UpdateLogTool
 
 		public static void UpdateOnStartup()
 		{
-			CheckUpdates(UpdateFor.Startup);
+			LongEventHandler.ExecuteWhenFinished(delegate ()
+			{
+				CheckUpdates(UpdateFor.Startup);
+			});
 		}
 
 		public static void UpdateOnGameInit()
 		{
-			CheckUpdates(UpdateFor.GameInit);
+			LongEventHandler.ExecuteWhenFinished(delegate ()
+			{
+				CheckUpdates(UpdateFor.GameInit);
+			});
 		}
 
 		public static void UpdateOnNewGame()
 		{
-			CheckUpdates(UpdateFor.NewGame);
+			LongEventHandler.ExecuteWhenFinished(delegate ()
+			{
+				CheckUpdates(UpdateFor.NewGame);
+			});
 		}
 
 		public static void UpdateOnLoadedGame()
 		{
-			CheckUpdates(UpdateFor.LoadedGame);
+			LongEventHandler.ExecuteWhenFinished(delegate ()
+			{
+				CheckUpdates(UpdateFor.LoadedGame);
+			});
 		}
 	}
 }
