@@ -79,8 +79,14 @@ namespace UpdateLogTool
 				}
 				log = value;
 				mod = log.Mod;
-				metaData = ModLister.GetActiveModWithIdentifier(mod.PackageId, ignorePostfix: true);
+				metaData = ModLister.GetActiveModWithIdentifier(mod.PackageId);
 				segments = EnhancedText.ParseDescriptionData(log).ToList();
+
+				if (Prefs.DevMode)
+				{
+					Log.Message($"Opening Log for {mod.PackageId}");
+				}
+
 				//Newlines will end in \n even on windows, xml reader string isn't able to use string.EndsWith for Environment.NewLine
 				if (segments.LastOrDefault() is DescriptionData data && (data.text.NullOrEmpty() || data.text.Last() != '\n'))
 				{
