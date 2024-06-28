@@ -282,7 +282,6 @@ namespace UpdateLogTool
 
 		public bool Equals(UpdateLog log)
 		{
-			Log.Message($"Mod: {Mod is null} Log: {log is null} UpdateData: {UpdateData is null} LogUpdateData: {log?.UpdateData is null}");
 			return Mod == log.Mod && UpdateData.currentVersion == log.UpdateData.currentVersion;
 		}
 
