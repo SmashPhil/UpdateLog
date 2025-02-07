@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Example of UpdateLog file formatting. -->
 <UpdateLog>
   <!--Can utilize Version.txt file placed in mod's root directory-->
   <currentVersion>1.3.0000</currentVersion>
