@@ -37,7 +37,7 @@ namespace UpdateLogTool
 			modUpdates = new HashSet<UpdateLog>();
 			foreach (ModContentPack mod in LoadedModManager.RunningModsListForReading)
 			{
-				UpdateLog log = mod.ReadFile();
+				UpdateLog log = FileReader.LoadUpdateLog(mod);
 				if (log != null)
 				{
 					modUpdates.Add(log);

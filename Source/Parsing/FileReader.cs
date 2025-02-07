@@ -14,7 +14,7 @@ namespace UpdateLogTool
 {
 	public static class FileReader
 	{
-		public const string UpdateLogFolder = "UpdateLog";
+		public const string UpdateLogFolder = "Updates";
 		public const string UpdateLogOldFolder = "Previous";
 		public const string UpdateLogFileName = "UpdateLog.xml";
 		public const string UpdateLogImageFolder = "Images";
@@ -27,7 +27,7 @@ namespace UpdateLogTool
 		public static string UpdateGifDirectory(ModContentPack mod, string folderName) => Path.Combine(mod.RootDir, folderName, UpdateLogFolder, UpdateLogGifFolder);
 		public static string UpdateGifDirectory(UpdateLog log) => UpdateImagesDirectory(log.Mod, log.CurrentFolder);
 
-		public static UpdateLog ReadFile(this ModContentPack mod)
+		public static UpdateLog LoadUpdateLog(ModContentPack mod)
 		{
 			try
 			{
