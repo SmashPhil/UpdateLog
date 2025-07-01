@@ -197,40 +197,40 @@ namespace UpdateLogTool
           {
             case "currentVersion":
               data.currentVersion = node.InnerText;
-              break;
+            break;
             case "updateOn":
               data.updateOn = (UpdateFor)Enum.Parse(typeof(UpdateFor), node.InnerText);
-              break;
+            break;
             case "description":
               data.description = node.InnerText;
-              break;
+            break;
             case "rightIconBar":
               data.rightIconBar = ListFromXml(node);
-              break;
+            break;
             case "leftIconBar":
               data.leftIconBar = ListFromXml(node);
-              break;
+            break;
             case "actionOnUpdate":
               data.actionOnUpdate = node.InnerText;
-              break;
+            break;
             case "images":
               data.images = ImageListFromXml(node);
-              break;
+            break;
             case "testing":
             {
               data.testing = bool.TryParse(node.InnerText, out bool result) && result;
             }
-              break;
+            break;
             case "update":
             {
               data.update = bool.TryParse(node.InnerText, out bool result) && result;
             }
-              break;
+            break;
             case "#comment":
               continue;
             default:
               Log.Error($"Failed to find {node.Name} in manual parsing.");
-              break;
+            break;
           }
         }
       }
