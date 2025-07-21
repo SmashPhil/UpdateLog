@@ -71,6 +71,7 @@
         </PackageReference>
 
         <PackageReference Include="PolySharp" Version="1.*" />
+        <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.4523" />
 
         <!--Local -->
         <Reference Include="SmashTools, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -79,6 +80,7 @@
             <Private>False</Private>
         </Reference>
         <!-- Dependencies -->
+        <!--
         <Reference Include="mscorlib">
             <HintPath>$(ManagedDirectory)\mscorlib.dll</HintPath>
             <Private>False</Private>
@@ -143,6 +145,7 @@
             <HintPath>$(ManagedDirectory)\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        -->
     </ItemGroup>
 
     <ItemGroup>
