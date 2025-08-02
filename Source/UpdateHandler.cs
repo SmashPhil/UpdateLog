@@ -1,27 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using HarmonyLib;
 using Verse;
 
 namespace UpdateLogTool;
 
-[StaticConstructorOnStartup]
 public static class UpdateHandler
 {
+  // TODO 1.7 - Can switch to single log field and remove expectations of multiple mods using this
   public static readonly HashSet<UpdateLog> modUpdates = [];
 
   public static readonly HashSet<UpdateLog> updateList = [];
 
-  static UpdateHandler()
+  public static void LoadUpdateLog(ModContentPack mod)
   {
-    foreach (ModContentPack mod in LoadedModManager.RunningModsListForReading)
+    UpdateLog log = FileReader.LoadUpdateLog(mod);
+    if (log == null)
     {
-      UpdateLog log = FileReader.LoadUpdateLog(mod);
-      if (log != null)
-      {
-        modUpdates.Add(log);
-      }
+      Log.Error($"Unable to load update log from {mod.Name}");
+      return;
     }
+    modUpdates.Add(log);
     SegmentParser.ParseAndCreateSegments();
     SegmentParser.GenerateRegexText();
   }
@@ -30,7 +28,7 @@ public static class UpdateHandler
   {
     return modUpdates.FirstOrDefault(m => m.Mod == mod);
   }
-
+  
   public static void CheckUpdates(UpdateFor updating)
   {
     updateList.Clear();

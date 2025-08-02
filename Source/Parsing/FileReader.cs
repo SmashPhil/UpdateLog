@@ -7,6 +7,7 @@ using System.Xml;
 using RimWorld;
 using SmashTools;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Networking;
 using Verse;
 
@@ -42,7 +43,7 @@ public static class FileReader
   {
     try
     {
-      var loadFolders = ModFoldersForVersion(mod);
+      List<string> loadFolders = ModFoldersForVersion(mod);
       if (!loadFolders.NullOrEmpty())
       {
         foreach (string folder in loadFolders)
@@ -104,33 +105,29 @@ public static class FileReader
   public static List<string> ModFoldersForVersion(ModContentPack mod)
   {
     ModMetaData metaData = Ext_Mods.GetActiveMod(mod.PackageId);
-    List<LoadFolder> loadFolders = new List<LoadFolder>();
-    if ((metaData?.loadFolders) != null && metaData.loadFolders.DefinedVersions().Count > 0)
+    Assert.IsNotNull(metaData);
+    List<LoadFolder> loadFolders;
+    if (metaData?.loadFolders != null && metaData.loadFolders.DefinedVersions().Count > 0)
     {
       loadFolders =
         metaData.LoadFoldersForVersion(VersionControl.CurrentVersionStringWithoutBuild);
       if (!loadFolders.NullOrEmpty())
-      {
         return loadFolders.Select(lf => lf.folderName).ToList();
-      }
     }
-
-    loadFolders = new List<LoadFolder>();
-
-    int num = VersionControl.CurrentVersion.Major;
-    int num2 = VersionControl.CurrentVersion.Minor;
+    int major = VersionControl.CurrentVersion.Major;
+    int minor = VersionControl.CurrentVersion.Minor;
     do
     {
-      if (num2 == 0)
+      if (minor == 0)
       {
-        num--;
-        num2 = 9;
+        major--;
+        minor = 9;
       }
       else
       {
-        num2--;
+        minor--;
       }
-      if (num < 1)
+      if (major < 1)
       {
         loadFolders = metaData.LoadFoldersForVersion("default");
         if (loadFolders != null)
@@ -139,7 +136,7 @@ public static class FileReader
         }
         return DefaultFoldersForVersion(mod).ToList();
       }
-      loadFolders = metaData.LoadFoldersForVersion(num + "." + num2);
+      loadFolders = metaData.LoadFoldersForVersion($"{major}.{minor}");
     } while (loadFolders.NullOrEmpty());
     return loadFolders.Select(lf => lf.folderName).ToList();
   }
