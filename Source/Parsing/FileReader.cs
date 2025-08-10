@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
+using JetBrains.Annotations;
 using RimWorld;
-using SmashTools;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Networking;
@@ -13,6 +13,7 @@ using Verse;
 
 namespace UpdateLogTool;
 
+[PublicAPI]
 public static class FileReader
 {
   public const string UpdateLogFolder = "Updates";
@@ -21,23 +22,35 @@ public static class FileReader
   public const string UpdateLogImageFolder = "Images";
   public const string UpdateLogGifFolder = "Gifs";
 
-  public static string UpdateLogDirectory(ModContentPack mod, string folderName) =>
-    Path.Combine(mod.RootDir, folderName, UpdateLogFolder);
+  public static string UpdateLogDirectory(ModContentPack mod, string folderName)
+  {
+    return Path.Combine(mod.RootDir, folderName, UpdateLogFolder);
+  }
 
-  public static string UpdateLogOldDirectory(ModContentPack mod, string folderName) =>
-    Path.Combine(mod.RootDir, folderName, UpdateLogFolder, UpdateLogOldFolder);
+  public static string UpdateLogOldDirectory(ModContentPack mod, string folderName)
+  {
+    return Path.Combine(mod.RootDir, folderName, UpdateLogFolder, UpdateLogOldFolder);
+  }
 
-  public static string UpdateImagesDirectory(ModContentPack mod, string folderName) =>
-    Path.Combine(mod.RootDir, folderName, UpdateLogFolder, UpdateLogImageFolder);
+  public static string UpdateImagesDirectory(ModContentPack mod, string folderName)
+  {
+    return Path.Combine(mod.RootDir, folderName, UpdateLogFolder, UpdateLogImageFolder);
+  }
 
-  public static string UpdateImagesDirectory(UpdateLog log) =>
-    UpdateImagesDirectory(log.Mod, log.CurrentFolder);
+  public static string UpdateImagesDirectory(UpdateLog log)
+  {
+    return UpdateImagesDirectory(log.Mod, log.CurrentFolder);
+  }
 
-  public static string UpdateGifDirectory(ModContentPack mod, string folderName) =>
-    Path.Combine(mod.RootDir, folderName, UpdateLogFolder, UpdateLogGifFolder);
+  public static string UpdateGifDirectory(ModContentPack mod, string folderName)
+  {
+    return Path.Combine(mod.RootDir, folderName, UpdateLogFolder, UpdateLogGifFolder);
+  }
 
-  public static string UpdateGifDirectory(UpdateLog log) =>
-    UpdateImagesDirectory(log.Mod, log.CurrentFolder);
+  public static string UpdateGifDirectory(UpdateLog log)
+  {
+    return UpdateImagesDirectory(log.Mod, log.CurrentFolder);
+  }
 
   public static UpdateLog LoadUpdateLog(ModContentPack mod)
   {
@@ -49,9 +62,7 @@ public static class FileReader
         foreach (string folder in loadFolders)
         {
           if (File.Exists(Path.Combine(UpdateLogDirectory(mod, folder), UpdateLogFileName)))
-          {
             return new UpdateLog(mod, folder);
-          }
         }
       }
     }
@@ -65,30 +76,30 @@ public static class FileReader
 
   public static List<UpdateLog> ReadPreviousFiles(this ModContentPack mod)
   {
-    List<UpdateLog> updates = new List<UpdateLog>();
+    List<UpdateLog> updates = [];
     try
     {
-      var loadFolders = ModFoldersForVersion(mod);
-      if (!loadFolders.NullOrEmpty())
+      List<string> loadFolders = ModFoldersForVersion(mod);
+      if (loadFolders.NullOrEmpty())
+        return updates;
+
+      foreach (string folder in loadFolders)
       {
-        foreach (string folder in loadFolders)
+        if (!Directory.Exists(UpdateLogDirectory(mod, folder)))
+          continue;
+
+        if (File.Exists(Path.Combine(UpdateLogDirectory(mod, folder), UpdateLogFileName)))
         {
-          if (Directory.Exists(UpdateLogDirectory(mod, folder)))
+          updates.Add(new UpdateLog(mod, folder));
+        }
+        if (Directory.Exists(UpdateLogOldDirectory(mod, folder)))
+        {
+          foreach (string filePath in Directory.EnumerateFiles(
+            UpdateLogOldDirectory(mod, folder), "*.xml"))
           {
-            if (File.Exists(Path.Combine(UpdateLogDirectory(mod, folder), UpdateLogFileName)))
+            if (File.Exists(filePath))
             {
-              updates.Add(new UpdateLog(mod, folder));
-            }
-            if (Directory.Exists(UpdateLogOldDirectory(mod, folder)))
-            {
-              foreach (string filePath in Directory.EnumerateFiles(
-                UpdateLogOldDirectory(mod, folder), "*.xml"))
-              {
-                if (File.Exists(filePath))
-                {
-                  updates.Add(new UpdateLog(mod, folder, filePath, false));
-                }
-              }
+              updates.Add(new UpdateLog(mod, folder, filePath, false));
             }
           }
         }
@@ -104,10 +115,14 @@ public static class FileReader
 
   public static List<string> ModFoldersForVersion(ModContentPack mod)
   {
-    ModMetaData metaData = Ext_Mods.GetActiveMod(mod.PackageId);
-    Assert.IsNotNull(metaData);
+    ModMetaData metaData = ModLister.GetActiveModWithIdentifier(mod.PackageId);
+    if (metaData == null)
+    {
+      Log.Warning($"Unable to load folders for {mod.PackageId}");
+      return null;
+    }
     List<LoadFolder> loadFolders;
-    if (metaData?.loadFolders != null && metaData.loadFolders.DefinedVersions().Count > 0)
+    if (metaData.loadFolders != null && metaData.loadFolders.DefinedVersions().Count > 0)
     {
       loadFolders =
         metaData.LoadFoldersForVersion(VersionControl.CurrentVersionStringWithoutBuild);
@@ -152,41 +167,37 @@ public static class FileReader
     }
     else
     {
-      Version version = new Version(0, 0);
+      Version version = new(0, 0);
       DirectoryInfo[] directories = metaData.RootDir.GetDirectories();
-      for (int i = 0; i < directories.Length; i++)
+      foreach (DirectoryInfo dir in directories)
       {
-        if (VersionControl.TryParseVersionString(directories[i].Name, out Version version2) &&
-          version2 > version)
+        if (VersionControl.TryParseVersionString(dir.Name, out Version parsedVersion) &&
+          parsedVersion > version)
         {
-          version = version2;
+          version = parsedVersion;
         }
       }
       if (version.Major > 0)
-      {
         yield return Path.Combine(rootDir, version.ToString());
-      }
     }
-    string text2 = Path.Combine(rootDir, ModContentPack.CommonFolderName);
-    if (Directory.Exists(text2))
-    {
-      yield return text2;
-    }
-    yield return rootDir;
+    string common = Path.Combine(rootDir, ModContentPack.CommonFolderName);
+    yield return Directory.Exists(common) ? common : rootDir;
   }
 
   /// <summary>
-  /// Manually parsing UpdateLog.UpdateLogData due to issue with ObjectFromXml<T> parsing lists in direct DocumentElement object
+  /// Manually parsing UpdateLog.UpdateLogData due to issue with <see cref="DirectXmlToObject.ObjectFromXml{T}"/>
+  /// parsing lists in direct DocumentElement object
   /// </summary>
   /// <param name="filePath"></param>
   public static UpdateLog.UpdateLogData ParseUpdateData(string filePath)
   {
     string xmlContent = File.ReadAllText(filePath);
-    UpdateLog.UpdateLogData data = new UpdateLog.UpdateLogData();
+    UpdateLog.UpdateLogData data = new();
     try
     {
-      XmlDocument xmlDocument = new XmlDocument();
+      XmlDocument xmlDocument = new();
       xmlDocument.LoadXml(xmlContent);
+      Assert.IsNotNull(xmlDocument.DocumentElement);
       foreach (XmlNode node in xmlDocument.DocumentElement.ChildNodes)
       {
         switch (node.Name)
@@ -240,17 +251,14 @@ public static class FileReader
 
   private static List<UpdateLog.UpdateLogData.HyperlinkedIcon> ListFromXml(XmlNode listRootNode)
   {
-    List<UpdateLog.UpdateLogData.HyperlinkedIcon> list =
-      new List<UpdateLog.UpdateLogData.HyperlinkedIcon>();
+    List<UpdateLog.UpdateLogData.HyperlinkedIcon> list = [];
     try
     {
       foreach (XmlNode xmlNode in listRootNode.ChildNodes)
       {
         try
         {
-          list.Add(
-            DirectXmlToObject.ObjectFromXml<UpdateLog.UpdateLogData.HyperlinkedIcon>(xmlNode,
-              true));
+          list.Add(DirectXmlToObject.ObjectFromXml<UpdateLog.UpdateLogData.HyperlinkedIcon>(xmlNode, true));
         }
         catch (Exception ex)
         {
@@ -270,8 +278,7 @@ public static class FileReader
   private static List<UpdateLog.UpdateLogData.UploadedImages> ImageListFromXml(
     XmlNode listRootNode)
   {
-    List<UpdateLog.UpdateLogData.UploadedImages> list =
-      new List<UpdateLog.UpdateLogData.UploadedImages>();
+    List<UpdateLog.UpdateLogData.UploadedImages> list = [];
     try
     {
       foreach (XmlNode xmlNode in listRootNode.ChildNodes)
@@ -299,21 +306,15 @@ public static class FileReader
 
   public static async Task<Texture2D> GetTextureFromURL(string url)
   {
-    using (UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(url))
-    {
-      UnityWebRequestAsyncOperation operation = webRequest.SendWebRequest();
+    using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(url);
+    UnityWebRequestAsyncOperation operation = webRequest.SendWebRequest();
 
-      while (!operation.isDone)
-      {
-        await Task.Delay(33);
-      }
+    while (!operation.isDone)
+      await Task.Delay(33);
 
-      if (webRequest.result == UnityWebRequest.Result.ConnectionError ||
-        webRequest.result == UnityWebRequest.Result.ProtocolError)
-      {
-        return null;
-      }
-      return DownloadHandlerTexture.GetContent(webRequest);
-    }
+    if (webRequest.result is UnityWebRequest.Result.ConnectionError or UnityWebRequest.Result.ProtocolError)
+      return null;
+
+    return DownloadHandlerTexture.GetContent(webRequest);
   }
 }
