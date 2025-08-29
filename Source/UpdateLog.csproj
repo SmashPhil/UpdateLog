@@ -9,7 +9,7 @@
         <CurrentDate>$([System.DateTime]::Now.ToString(yyyy/MM/dd HH:mm:ss))</CurrentDate>
 
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <Configurations>Debug;Release;Unstable;RelWithDbInfo</Configurations>
+        <Configurations>Debug;Unstable;Release;ReleaseTesting</Configurations>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
         <ProjectGuid>{04DF45B1-9D4D-40A6-A51D-3DCB146A53C8}</ProjectGuid>
         <OutputType>Library</OutputType>
@@ -44,17 +44,16 @@
         <DefineConstants>TRACE;DEBUG;UNITY_ASSERTIONS;DEV_TOOLS;</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <DebugType>portable</DebugType>
-        <DebugType>None</DebugType>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DebugSymbols>true</DebugSymbols>
         <Optimize>true</Optimize>
         <DefineConstants>TRACE;RELEASE;</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDbInfo|AnyCPU'">
-        <DebugSymbols>true</DebugSymbols>
-        <Optimize>true</Optimize>
-        <DefineConstants>TRACE;RELEASE;</DefineConstants>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseTesting|AnyCPU'">
+	    <DebugSymbols>true</DebugSymbols>
+	    <Optimize>true</Optimize>
+	    <DefineConstants>TRACE;RELEASE;UNITY_ASSERTIONS;DEV_TOOLS;</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
