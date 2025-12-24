@@ -21,8 +21,9 @@
         <TargetFramework>net48</TargetFramework>
         <LangVersion>preview</LangVersion>
         <FileAlignment>512</FileAlignment>
-        <OutDir>..\..\1.6\Assemblies\</OutDir>
-        <ManagedDirectory>..\..\..\..\RimWorldWin64_Data\Managed</ManagedDirectory>
+		<ModDir>..\..\</ModDir>
+	    <OutDir>$(ModDir)\1.6\Assemblies\</OutDir>
+	    <RefDir>$(ModDir)\..\..\RimWorldWin64_Data\Managed</RefDir>
         <GenerateDocumentationFile>False</GenerateDocumentationFile>
         <DebugType>embedded</DebugType>
         <ErrorReport>prompt</ErrorReport>
@@ -63,78 +64,15 @@
 			<PackageReference Include="PolySharp" Version="1.*" />
 
         <!--Local -->
-        <Reference Include="SmashTools, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-            <SpecificVersion>False</SpecificVersion>
-            <HintPath>..\..\1.6\Assemblies\SmashTools.dll</HintPath>
-            <Private>False</Private>
+		<Reference Include="SmashTools">
+			<HintPath>$(OutDir)\SmashTools.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+
+        <Reference Include="SmashToolsCoreLib">
+	        <HintPath>$(OutDir)\SmashToolsCoreLib.dll</HintPath>
+	        <Private>False</Private>
         </Reference>
-        <!-- Dependencies -->
-        <!--
-        <Reference Include="mscorlib">
-            <HintPath>$(ManagedDirectory)\mscorlib.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Assembly-CSharp">
-            <HintPath>$(ManagedDirectory)\Assembly-CSharp.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="System">
-            <HintPath>$(ManagedDirectory)\System.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="System.Core">
-            <HintPath>$(ManagedDirectory)\System.Core.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="System.Data">
-            <HintPath>$(ManagedDirectory)\System.Data.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="System.Runtime">
-            <HintPath>$(ManagedDirectory)\System.Runtime.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="System.Runtime.Serialization">
-            <HintPath>$(ManagedDirectory)\System.Runtime.Serialization.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="System.Xml">
-            <HintPath>$(ManagedDirectory)\System.Xml.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine">
-            <HintPath>$(ManagedDirectory)\UnityEngine.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.CoreModule">
-            <HintPath>$(ManagedDirectory)\UnityEngine.CoreModule.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.IMGUIModule">
-            <HintPath>$(ManagedDirectory)\UnityEngine.IMGUIModule.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.ImageConversionModule">
-            <HintPath>$(ManagedDirectory)\UnityEngine.ImageConversionModule.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.InputLegacyModule">
-            <HintPath>$(ManagedDirectory)\UnityEngine.InputLegacyModule.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.TextRenderingModule">
-            <HintPath>$(ManagedDirectory)\UnityEngine.TextRenderingModule.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.UnityWebRequestModule">
-            <HintPath>$(ManagedDirectory)\UnityEngine.UnityWebRequestModule.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.UnityWebRequestTextureModule">
-            <HintPath>$(ManagedDirectory)\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        -->
     </ItemGroup>
 
     <ItemGroup>
