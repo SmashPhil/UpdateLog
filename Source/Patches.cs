@@ -1,42 +1,28 @@
-﻿using HarmonyLib;
-using SmashTools.Patching;
-using SmashTools.Performance;
+﻿using CoreLib.Performance;
+using SmashTools;
 using Verse;
 
 namespace UpdateLogTool;
 
-internal class Patches : IPatchCategory
+[StaticConstructorOnStartup]
+internal static class UpdateLogEvents
 {
-  private const int DelayUpdateLog = 500; // ms
-
   // Character Editor stalls for a few seconds on the main menu's first frame. Delay the update log for a small
   // amount so CE finishes its blocking operation first, otherwise it will pop up before the main menu draws and
   // then trigger CE to run when the update log is closed, causing people to think the update log is what's freezing
   // the main menu for a few seconds.
-  private const string CharacterEditor = "void.charactereditor";
+  private const int DelayUpdateLog = 500; // ms
 
-  PatchSequence IPatchCategory.PatchAt => PatchSequence.Async;
-
-  void IPatchCategory.PatchMethods()
+  static UpdateLogEvents()
   {
-    HarmonyPatcher.Patch(original: AccessTools.Method(typeof(UIRoot_Entry), nameof(UIRoot_Entry.Init)),
-      postfix: new HarmonyMethod(AccessTools.Method(typeof(Patches), nameof(UpdateOnStartup)),
-        priority: Priority.Last));
-    HarmonyPatcher.Patch(
-      original: AccessTools.Method(typeof(GameComponentUtility), nameof(GameComponentUtility.FinalizeInit)),
-      postfix: new HarmonyMethod(typeof(Patches),
-        nameof(UpdateOnGameInit)));
-    HarmonyPatcher.Patch(
-      original: AccessTools.Method(typeof(GameComponentUtility), nameof(GameComponentUtility.StartedNewGame)),
-      postfix: new HarmonyMethod(typeof(Patches),
-        nameof(UpdateOnNewGame)));
-    HarmonyPatcher.Patch(
-      original: AccessTools.Method(typeof(GameComponentUtility), nameof(GameComponentUtility.LoadedGame)),
-      postfix: new HarmonyMethod(typeof(Patches),
-        nameof(UpdateOnLoadedGame)));
+    GameEvent.OnMainMenu += UpdateOnStartup;
+    GameEvent.OnNewGame += UpdateOnNewGame;
+    GameEvent.OnNewGame += UpdateOnGameInit;
+    GameEvent.OnLoadGame += UpdateOnLoadedGame;
+    GameEvent.OnLoadGame += UpdateOnGameInit;
   }
 
-  public static void UpdateOnStartup()
+  private static void UpdateOnStartup()
   {
     LongEventHandler.ExecuteWhenFinished(delegate
     {
@@ -44,7 +30,7 @@ internal class Patches : IPatchCategory
     });
   }
 
-  public static void UpdateOnGameInit()
+  private static void UpdateOnGameInit()
   {
     LongEventHandler.ExecuteWhenFinished(delegate
     {
@@ -52,7 +38,7 @@ internal class Patches : IPatchCategory
     });
   }
 
-  public static void UpdateOnNewGame()
+  private static void UpdateOnNewGame()
   {
     LongEventHandler.ExecuteWhenFinished(delegate
     {
@@ -60,7 +46,7 @@ internal class Patches : IPatchCategory
     });
   }
 
-  public static void UpdateOnLoadedGame()
+  private static void UpdateOnLoadedGame()
   {
     LongEventHandler.ExecuteWhenFinished(delegate
     {

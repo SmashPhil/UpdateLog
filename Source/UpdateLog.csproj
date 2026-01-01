@@ -64,15 +64,15 @@
 			<PackageReference Include="PolySharp" Version="1.*" />
 
         <!--Local -->
+        <Reference Include="CoreLib">
+	        <HintPath>$(OutDir)\CoreLib.dll</HintPath>
+	        <Private>False</Private>
+        </Reference>
+
 		<Reference Include="SmashTools">
 			<HintPath>$(OutDir)\SmashTools.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-
-        <Reference Include="SmashToolsCoreLib">
-	        <HintPath>$(OutDir)\SmashToolsCoreLib.dll</HintPath>
-	        <Private>False</Private>
-        </Reference>
     </ItemGroup>
 
     <ItemGroup>
