@@ -39,10 +39,10 @@
         <DefineConstants>TRACE;DEBUG;UNITY_ASSERTIONS;DEV_TOOLS</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'UnitTest|AnyCPU'">
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Unstable|AnyCPU'">
         <DebugSymbols>true</DebugSymbols>
-        <Optimize>false</Optimize>
-        <DefineConstants>TRACE;DEBUG;UNITY_ASSERTIONS;DEV_TOOLS;</DefineConstants>
+        <Optimize>true</Optimize>
+        <DefineConstants>TRACE;UNSTABLE;</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
