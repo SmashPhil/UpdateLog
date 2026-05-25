@@ -1,81 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <Authors>Smash Phil</Authors>
-        <Description>Update log tool for showing change notes ingame.</Description>
-        <Product>Update Log</Product>
-        <FileVersion>1.6.0</FileVersion>
-        <AssemblyVersion>1.6.0</AssemblyVersion>
-        <CurrentDate>$([System.DateTime]::Now.ToString(yyyy/MM/dd HH:mm:ss))</CurrentDate>
+  <PropertyGroup>
+    <Authors>Smash Phil</Authors>
+    <Description>Update log tool for showing change notes ingame.</Description>
+    <Product>Update Log</Product>
+    <RootNamespace>UpdateLogTool</RootNamespace>
+    <AssemblyName>UpdateLogTool</AssemblyName>
+    <CurrentDate>$([System.DateTime]::Now.ToString(yyyy/MM/dd HH:mm:ss))</CurrentDate>
+    <ProjectGuid>{04DF45B1-9D4D-40A6-A51D-3DCB146A53C8}</ProjectGuid>
+    
+    <ModDir>..\..\</ModDir>
+    <OutDir>$(ModDir)\1.6\Assemblies\</OutDir>
+    <RefDir>$(ModDir)\..\..\RimWorldWin64_Data\Managed</RefDir>
+  </PropertyGroup>
 
-        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <Configurations>Debug;Unstable;Release;ReleaseTesting</Configurations>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{04DF45B1-9D4D-40A6-A51D-3DCB146A53C8}</ProjectGuid>
-        <OutputType>Library</OutputType>
-        <RootNamespace>UpdateLogTool</RootNamespace>
-        <AssemblyName>UpdateLogTool</AssemblyName>
-        <TargetFramework>net48</TargetFramework>
-        <FileAlignment>512</FileAlignment>
-        <LangVersion>8.0</LangVersion>
-        <TargetFramework>net48</TargetFramework>
-        <LangVersion>preview</LangVersion>
-        <FileAlignment>512</FileAlignment>
-		<ModDir>..\..\</ModDir>
-	    <OutDir>$(ModDir)\1.6\Assemblies\</OutDir>
-	    <RefDir>$(ModDir)\..\..\RimWorldWin64_Data\Managed</RefDir>
-        <GenerateDocumentationFile>False</GenerateDocumentationFile>
-        <DebugType>embedded</DebugType>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <NoWarn>CS0649</NoWarn>
-    </PropertyGroup>
+  <ItemGroup>
+    <!-- Nuget -->
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.*" />
+    <PackageReference Include="Lib.Harmony.Ref" Version="2.4.2" />
+    <PackageReference Include="PolySharp" Version="1.*" />
 
-    <!--Build Configurations -->
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <DebugSymbols>true</DebugSymbols>
-        <Optimize>false</Optimize>
-        <DefineConstants>TRACE;DEBUG;UNITY_ASSERTIONS;DEV_TOOLS</DefineConstants>
-    </PropertyGroup>
+    <!--Local -->
+    <Reference Include="CoreLib">
+      <HintPath>$(OutDir)\CoreLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Unstable|AnyCPU'">
-        <DebugSymbols>true</DebugSymbols>
-        <Optimize>true</Optimize>
-        <DefineConstants>TRACE;UNSTABLE;</DefineConstants>
-    </PropertyGroup>
+    <Reference Include="SmashTools">
+      <HintPath>$(OutDir)\SmashTools.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <DebugSymbols>true</DebugSymbols>
-        <Optimize>true</Optimize>
-        <DefineConstants>TRACE;RELEASE;</DefineConstants>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseTesting|AnyCPU'">
-	    <DebugSymbols>true</DebugSymbols>
-	    <Optimize>true</Optimize>
-	    <DefineConstants>TRACE;RELEASE;UNITY_ASSERTIONS;DEV_TOOLS;</DefineConstants>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <!-- Nuget -->
-			<PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.*" />
-			<PackageReference Include="Lib.Harmony.Ref" Version="2.4.2" />
-			<PackageReference Include="PolySharp" Version="1.*" />
-
-        <!--Local -->
-        <Reference Include="CoreLib">
-	        <HintPath>$(OutDir)\CoreLib.dll</HintPath>
-	        <Private>False</Private>
-        </Reference>
-
-		<Reference Include="SmashTools">
-			<HintPath>$(OutDir)\SmashTools.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Properties\" />
-    </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>
